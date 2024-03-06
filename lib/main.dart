@@ -19,21 +19,59 @@ class BasicGridWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
   return Scaffold(
-  appBar: AppBar(
-  title: Text("GIV SUPERBOWL WEBSITE"),
-  ),
+    appBar: AppBar(
+      title: Text("GIV SUPERBOWL WEBSITE"),
+      centerTitle:true,
+
+    ),
 
 
-      body: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          mainAxisSpacing: 10, //le spacing entre deux lignes
+      body:Stack(
+          children:<Widget>[
+            Align(
+            alignment:Alignment.topCenter,
+              child: Container(
+                decoration:const BoxDecoration(
+
+                gradient:LinearGradient(
+                begin: Alignment.center,
+                 end:Alignment.bottomCenter,
+                    colors:[
+                        Colors.purple,
+                        Colors.red,
+
+                     ]
+           ),
+
+           ),
+
+            height: MediaQuery.of(context).size.height* 0.25, // Set the height to 1/4 of the screen height
+
+              ),
+      ),
+Positioned(
+  top: 50,
+  left:MediaQuery.of(context).size.width* 0.25,
+  width:  MediaQuery.of(context).size.width* 0.5,
+  height: MediaQuery.of(context).size.height* 0.5,
+
+            child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          mainAxisSpacing: 7, //le spacing entre deux lignes
           crossAxisSpacing: 10, //le spacing entre colonne
           crossAxisCount: 4, //le nombre de colonne
+          ),
+           itemCount: 50, //nombre de item que je veux dans ma grid view
+             itemBuilder: (context, index) =>  buildImageCard(index), //ici c'est pour fill les grid avec ces elements
+                                 ),
 
-        ),
-        itemCount: 50, //nombre de item que je veux dans ma grid view
-        itemBuilder: (context, index) =>
-            buildImageCard(index), //ici c'est pour fill les grid avec ces elements
+          ),
+
+
+
+
+
+          ],
       )
   );
 
@@ -59,6 +97,7 @@ class BasicGridWidget extends StatelessWidget {
         ),
         ),
       );
+
 
 
 }
