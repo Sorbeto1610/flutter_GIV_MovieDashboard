@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
+
+
 void main() {
   runApp(
     MaterialApp(
@@ -18,21 +20,24 @@ class BasicGridWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
 
       body: Stack(
+
         children: <Widget>[
           Align(
             alignment: Alignment.topCenter,
             child: Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  begin: Alignment.center,
-                  end: Alignment.bottomCenter,
+
                   colors: [
 
-                    Color(0xFF6D67CE), // Modern Purple
-                    Color(0xFF2F80ED), // Modern Blue
-                    Color(0xFFFD7C64)// Modern Orange
+                    Color(0xFF91180B),
+                    Color(0xFFB9220F),
+                    Color(0xFFE32D13),
+                    Color(0xFFF85138),
+                    Color(0xFFFF6666),
 
                   ],
                 ),
@@ -61,7 +66,7 @@ class BasicGridWidget extends StatelessWidget {
             child: ResponsiveText(
               text: "The Movie Database",
               fontSize: 24.0,
-              textColor: Colors.black,
+              textColor: Colors.white,
               shadowColor: Colors.grey,
               shadowOffset: Offset(2.0, 2.0),
 
@@ -71,11 +76,11 @@ class BasicGridWidget extends StatelessWidget {
           Positioned(
             height: MediaQuery.of(context).size.height/2,
             width: MediaQuery.of(context).size.width/3,
-            top:  MediaQuery.of(context).size.height/4,
+            top:  MediaQuery.of(context).size.height/2,
             left: 20,
             child: CarouselSlider(
               options: CarouselOptions(
-                height: MediaQuery.of(context).size.height * 0.25,
+                height: MediaQuery.of(context).size.height * 0.5,
               ),
               items: [1, 2, 3, 4, 5].map((i) {
                 return Builder(
@@ -93,6 +98,26 @@ class BasicGridWidget extends StatelessWidget {
               }).toList(),
             ),
           ),
+          Positioned(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width/3,
+            top:  MediaQuery.of(context).size.height/2,
+            right: 20,
+            child:Container(
+              transform: Matrix4.translationValues(0, -90, 0),
+              width: MediaQuery.of(context).size.width/3,
+              height: MediaQuery.of(context).size.width/3,
+              padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 22.0),
+              decoration: BoxDecoration(
+                color:Colors.white,
+                borderRadius: BorderRadius.circular(25.0),
+              ),
+            ),
+          ),
+
+
+
+
         ],
       ),
     );
@@ -161,3 +186,7 @@ class ResponsiveText extends StatelessWidget {
     );
   }
 }
+
+
+
+
