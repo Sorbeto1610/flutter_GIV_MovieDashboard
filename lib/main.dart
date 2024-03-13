@@ -18,10 +18,7 @@ class BasicGridWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("GIV SUPERBOWL WEBSITE"),
-        centerTitle: true,
-      ),
+
       body: Stack(
         children: <Widget>[
           Align(
@@ -31,8 +28,20 @@ class BasicGridWidget extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.center,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.purple, Colors.red],
+                  colors: [
+
+                    Color(0xFF6D67CE), // Modern Purple
+                    Color(0xFF2F80ED), // Modern Blue
+                    Color(0xFFFD7C64)// Modern Orange
+
+                  ],
                 ),
+                boxShadow:  [
+                  BoxShadow(
+                    blurRadius: 10.0,
+                    spreadRadius: 2.0,
+                  ),
+                ],
               ),
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -44,6 +53,18 @@ class BasicGridWidget extends StatelessWidget {
                 itemBuilder: (context, index) => buildImageCard(index),
               ),
               height: MediaQuery.of(context).size.height * 0.25,
+            ),
+          ),
+          Positioned(
+            top:  MediaQuery.of(context).size.height / 4,
+            left: MediaQuery.of(context).size.width / 3,
+            child: ResponsiveText(
+              text: "The Movie Database",
+              fontSize: 24.0,
+              textColor: Colors.black,
+              shadowColor: Colors.grey,
+              shadowOffset: Offset(2.0, 2.0),
+
             ),
           ),
 
@@ -96,4 +117,47 @@ class BasicGridWidget extends StatelessWidget {
       ),
     ),
   );
+}
+
+
+class ResponsiveText extends StatelessWidget {
+  final String text;
+  final double fontSize;
+  final Color textColor;
+  final Color shadowColor;
+  final Offset shadowOffset;
+
+
+  ResponsiveText({
+    required this.text,
+    required this.fontSize,
+    required this.textColor,
+    required this.shadowColor,
+    required this.shadowOffset,
+
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double responsiveFontSize = screenWidth * fontSize / 375.0;
+
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: responsiveFontSize,
+        color: textColor,
+        fontFamily: 'Montserrat',
+        fontWeight: FontWeight.bold,
+
+        shadows: [
+          Shadow(
+            color: shadowColor,
+            offset: shadowOffset,
+
+          ),
+        ],
+      ),
+    );
+  }
 }
