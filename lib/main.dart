@@ -1,13 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+//import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
 
 
 void main() {
   runApp(
-    MaterialApp(
+    const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: BasicGridWidget(),
     ),
@@ -15,8 +14,7 @@ void main() {
 }
 
 class BasicGridWidget extends StatelessWidget {
-  const BasicGridWidget();
-
+  const BasicGridWidget({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,6 +23,7 @@ class BasicGridWidget extends StatelessWidget {
       body: Stack(
 
         children: <Widget>[
+
           Align(
             alignment: Alignment.topCenter,
             child: Container(
@@ -48,16 +47,32 @@ class BasicGridWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              /*child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   mainAxisSpacing: 20,
                   crossAxisSpacing: 20,
                   crossAxisCount: 5,
                 ),
-                itemCount: 50,
+                physics: AlwaysScrollableScrollPhysics(),
                 itemBuilder: (context, index) => buildImageCard(index),
-              ),
+              ),*/
+
+
               height: MediaQuery.of(context).size.height * 0.25,
+              child: Container(
+                child: GridView.builder(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 5,
+                      mainAxisSpacing: 5.0,
+                      crossAxisSpacing: 20.0,
+                    ),
+                    itemCount: 5,
+                    itemBuilder: (context, index) {
+                      return ImageCarouselSlider();
+                    }
+                ),
+              ),
+
             ),
           ),
           Positioned(
@@ -72,32 +87,8 @@ class BasicGridWidget extends StatelessWidget {
 
             ),
           ),
-
-          Positioned(
-            height: MediaQuery.of(context).size.height/2,
-            width: MediaQuery.of(context).size.width/3,
-            top:  MediaQuery.of(context).size.height/2,
-            left: 20,
-            child: CarouselSlider(
-              options: CarouselOptions(
-                height: MediaQuery.of(context).size.height * 0.5,
-              ),
-              items: [1, 2, 3, 4, 5].map((i) {
-                return Builder(
-                  builder: (BuildContext context) {
-                    return Container(
-                      width: MediaQuery.of(context).size.width/3,
-                      margin: EdgeInsets.symmetric(horizontal: 5.0),
-                      decoration: BoxDecoration(
-                        color: Colors.amber,
-                      ),
-                      child: Text('text $i', style: TextStyle(fontSize: 16.0)),
-                    );
-                  },
-                );
-              }).toList(),
-            ),
-          ),
+//   LE GROS CARRE BLANC FAIT PAR IRENE (en vrai faudra juste le revoir donc je l'ai mis en commentaire)
+/*
           Positioned(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width/3,
@@ -114,10 +105,7 @@ class BasicGridWidget extends StatelessWidget {
               ),
             ),
           ),
-
-
-
-
+*/
         ],
       ),
     );
@@ -142,7 +130,111 @@ class BasicGridWidget extends StatelessWidget {
       ),
     ),
   );
+
 }
+
+
+
+
+class BasicWhiteCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.white,
+      elevation: 4.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Card Title',
+              style: TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 8.0),
+            Text(
+              'Card Content goes here.',
+              style: TextStyle(
+                fontSize: 16.0,
+                color: Colors.black87,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+
+class ImageCarouselSlider extends StatelessWidget {
+  const ImageCarouselSlider({Key? key}) : super(key: key);
+
+  Widget buildImageCard(int index) => Card(
+    margin: EdgeInsets.zero,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(8),
+    ),
+    child: Directionality(
+      textDirection: TextDirection.ltr,
+      child: Container(
+        margin: EdgeInsets.all(8),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.network(
+            'https://source.unsplash.com/random?sig=$index',
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    ),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double widgetHeight = screenHeight / 20; // 1/20 of the screen width
+
+    return SizedBox(
+      height: widgetHeight,
+      child: ShaderMask(
+        shaderCallback: (Rect bounds) {
+          return LinearGradient(
+            colors: [Colors.black, Colors.transparent, Colors.black],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ).createShader(bounds);
+        },
+        blendMode: BlendMode.dstOut, // Use dstOut blend mode for transparency
+        child: CarouselSlider(
+          options: CarouselOptions(
+            scrollDirection: Axis.vertical,
+            height: widgetHeight, // Set the height of the carousel
+            enableInfiniteScroll: true,
+            autoPlay: true,
+            autoPlayInterval: Duration(seconds: 3),
+            autoPlayAnimationDuration: Duration(milliseconds: 3000),
+            autoPlayCurve: Curves.linear,
+            enlargeCenterPage: true,
+          ),
+          items: List.generate(
+            8,
+                (index) => buildImageCard(index), // Use buildImageCard function to create items
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 
 
 class ResponsiveText extends StatelessWidget {
@@ -186,7 +278,3 @@ class ResponsiveText extends StatelessWidget {
     );
   }
 }
-
-
-
-
