@@ -3,54 +3,83 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'movie_list_view.dart';
+import 'movie_service.dart';
+import 'movie.dart';
 
 
+
+// void main() {
+//   runApp(
+//     MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       home: MovieExplorerApp(),
+//     ),
+//   );
+// }
+//
 void main() {
-  runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: BasicGridWidget(),
-    ),
-  );
-}
-class MovieList extends StatefulWidget {
-  @override
-  _MovieListState createState() => _MovieListState();
+  runApp(MovieExplorerApp());
 }
 
-class _MovieListState extends State<MovieList> {
-  List<Map<String, dynamic>> titlesAndPosters = [];
+
+
+class MovieExplorerApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Movie Explorer',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: MovieExplorerHomePage(),
+    );
+  }
+}
+
+
+
+class MovieExplorerHomePage extends StatefulWidget {
+  @override
+  _MovieExplorerHomePageState createState() => _MovieExplorerHomePageState();
+}
+
+class _MovieExplorerHomePageState extends State<MovieExplorerHomePage> {
+  List<Movie> movies = [];
 
   @override
   void initState() {
     super.initState();
-    fetchMovieData();
+    fetchMovies();
   }
 
-  Future<void> fetchMovieData() async {
-    final response = await http.get(Uri.parse('http://localhost:3000'));
-    if (response.statusCode == 200) {
+
+
+  Future<void> fetchMovies() async {
+    try {
+      final List<Movie> fetchedMovies = await MovieService.fetchMovies();
       setState(() {
-        titlesAndPosters = List<Map<String, dynamic>>.from(json.decode(response.body));
+        movies = fetchedMovies;
       });
-    } else {
-      throw Exception('Failed to load movie data');
+    } catch (e) {
+      print('Error fetching movies: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: titlesAndPosters.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(titlesAndPosters[index]['original_title']),
-          leading: Image.network(titlesAndPosters[index]['poster_path']),
-        );
-      },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Movie Explorer'),
+      ),
+      body: MovieListView(movies: movies),
     );
   }
 }
+
+
+
+
+
+
 
 class BasicGridWidget extends StatelessWidget {
   const BasicGridWidget({super.key});
