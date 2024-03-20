@@ -1,16 +1,55 @@
 import 'package:flutter/material.dart';
-//import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 
 
 void main() {
   runApp(
-    const MaterialApp(
+    MaterialApp(
       debugShowCheckedModeBanner: false,
       home: BasicGridWidget(),
     ),
   );
+}
+class MovieList extends StatefulWidget {
+  @override
+  _MovieListState createState() => _MovieListState();
+}
+
+class _MovieListState extends State<MovieList> {
+  List<Map<String, dynamic>> titlesAndPosters = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMovieData();
+  }
+
+  Future<void> fetchMovieData() async {
+    final response = await http.get(Uri.parse('http://localhost:3000'));
+    if (response.statusCode == 200) {
+      setState(() {
+        titlesAndPosters = List<Map<String, dynamic>>.from(json.decode(response.body));
+      });
+    } else {
+      throw Exception('Failed to load movie data');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: titlesAndPosters.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(titlesAndPosters[index]['original_title']),
+          leading: Image.network(titlesAndPosters[index]['poster_path']),
+        );
+      },
+    );
+  }
 }
 
 class BasicGridWidget extends StatelessWidget {
@@ -18,6 +57,8 @@ class BasicGridWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
+
       backgroundColor: Colors.black,
 
       body: Stack(
@@ -85,6 +126,14 @@ class BasicGridWidget extends StatelessWidget {
               shadowColor: Colors.grey,
               shadowOffset: Offset(2.0, 2.0),
 
+            ),
+          ),
+          Positioned(
+            top: MediaQuery.of(context).size.height / 3,
+            width: MediaQuery.of(context).size.width,
+            child: Container(
+              height: MediaQuery.of(context).size.height / 2,
+              child: ModernCarousel(),
             ),
           ),
 //   LE GROS CARRE BLANC FAIT PAR IRENE (en vrai faudra juste le revoir donc je l'ai mis en commentaire)
@@ -235,6 +284,55 @@ class ImageCarouselSlider extends StatelessWidget {
   }
 }
 
+class ModernCarousel extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return CarouselSlider(
+      options: CarouselOptions(
+        height: MediaQuery.of(context).size.height / 2,
+        autoPlay: true,
+        enlargeCenterPage: true,
+      ),
+      items: [
+        {
+          'image': 'https://example.com/image1.jpg',
+          'title': 'Movie 1',
+        },
+        {
+          'image': 'https://example.com/image2.jpg',
+          'title': 'Movie 2',
+        }
+      ].map((item) {
+        return Builder(
+          builder: (BuildContext context) {
+            return Container(
+              width: MediaQuery.of(context).size.width,
+              margin: EdgeInsets.symmetric(horizontal: 5.0),
+              decoration: BoxDecoration(
+                color: Colors.amber,
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Movie Title', // Add your movie title here
+                    style: TextStyle(fontSize: 24.0),
+                  ),
+                  SizedBox(height: 10.0),
+                  Image.network(
+                    item['image']!, // Use item['image'] as image URL
+                    fit: BoxFit.cover,
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      }).toList(),
+    );
+  }
+}
 
 
 class ResponsiveText extends StatelessWidget {
