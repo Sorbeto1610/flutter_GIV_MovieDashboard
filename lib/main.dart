@@ -1,85 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
-import 'movie_list_view.dart';
-import 'movie_service.dart';
+import 'package:giv/movie_caroussel_view.dart';
+import 'classFile.dart';
+import 'movie_caroussel_view.dart';
+import 'api-config.dart';
 import 'movie.dart';
+import 'image_caroussel_slider.dart';
 
 
 
-// void main() {
-//   runApp(
-//     MaterialApp(
-//       debugShowCheckedModeBanner: false,
-//       home: MovieExplorerApp(),
-//     ),
-//   );
-// }
-//
+
 void main() {
+   runApp(
+     MaterialApp(
+       debugShowCheckedModeBanner: false,
+       home: CodeAvantApp(),
+     ),
+   );
+ }
+
+/*void main() {
   runApp(MovieExplorerApp());
 }
+*/
 
 
 
-class MovieExplorerApp extends StatelessWidget {
+class CodeAvantApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Movie Explorer',
+      debugShowCheckedModeBanner: false,
+      title: 'App Code Avant',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: MovieExplorerHomePage(),
+      home: const BasicGridWidget(),
     );
   }
 }
-
-
-
-class MovieExplorerHomePage extends StatefulWidget {
-  @override
-  _MovieExplorerHomePageState createState() => _MovieExplorerHomePageState();
-}
-
-class _MovieExplorerHomePageState extends State<MovieExplorerHomePage> {
-  List<Movie> movies = [];
-
-  @override
-  void initState() {
-    super.initState();
-    fetchMovies();
-  }
-
-
-
-  Future<void> fetchMovies() async {
-    try {
-      final List<Movie> fetchedMovies = await MovieService.fetchMovies();
-      setState(() {
-        movies = fetchedMovies;
-      });
-    } catch (e) {
-      print('Error fetching movies: $e');
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Movie Explorer'),
-      ),
-      body: MovieListView(movies: movies),
-    );
-  }
-}
-
-
-
-
-
-
 
 class BasicGridWidget extends StatelessWidget {
   const BasicGridWidget({super.key});
@@ -138,7 +95,7 @@ class BasicGridWidget extends StatelessWidget {
                     ),
                     itemCount: 5,
                     itemBuilder: (context, index) {
-                      return ImageCarouselSlider();
+                      return ImageCarousselSlider();
                     }
                 ),
               ),
@@ -162,7 +119,7 @@ class BasicGridWidget extends StatelessWidget {
             width: MediaQuery.of(context).size.width,
             child: Container(
               height: MediaQuery.of(context).size.height / 2,
-              child: ModernCarousel(),
+              child: MovieExplorerApp(),
             ),
           ),
 //   LE GROS CARRE BLANC FAIT PAR IRENE (en vrai faudra juste le revoir donc je l'ai mis en commentaire)
@@ -252,116 +209,6 @@ class BasicWhiteCard extends StatelessWidget {
 
 
 
-
-class ImageCarouselSlider extends StatelessWidget {
-  const ImageCarouselSlider({Key? key}) : super(key: key);
-
-  Widget buildImageCard(int index) => Card(
-    margin: EdgeInsets.zero,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(8),
-    ),
-    child: Directionality(
-      textDirection: TextDirection.ltr,
-      child: Container(
-        margin: EdgeInsets.all(8),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.network(
-            'https://source.unsplash.com/random?sig=$index',
-            fit: BoxFit.cover,
-          ),
-        ),
-      ),
-    ),
-  );
-
-  @override
-  Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
-    double widgetHeight = screenHeight / 20; // 1/20 of the screen width
-
-    return SizedBox(
-      height: widgetHeight,
-      child: ShaderMask(
-        shaderCallback: (Rect bounds) {
-          return LinearGradient(
-            colors: [Colors.black, Colors.transparent, Colors.black],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ).createShader(bounds);
-        },
-        blendMode: BlendMode.dstOut, // Use dstOut blend mode for transparency
-        child: CarouselSlider(
-          options: CarouselOptions(
-            scrollDirection: Axis.vertical,
-            height: widgetHeight, // Set the height of the carousel
-            enableInfiniteScroll: true,
-            autoPlay: true,
-            autoPlayInterval: Duration(seconds: 3),
-            autoPlayAnimationDuration: Duration(milliseconds: 3000),
-            autoPlayCurve: Curves.linear,
-            enlargeCenterPage: true,
-          ),
-          items: List.generate(
-            8,
-                (index) => buildImageCard(index), // Use buildImageCard function to create items
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ModernCarousel extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return CarouselSlider(
-      options: CarouselOptions(
-        height: MediaQuery.of(context).size.height / 2,
-        autoPlay: true,
-        enlargeCenterPage: true,
-      ),
-      items: [
-        {
-          'image': 'https://example.com/image1.jpg',
-          'title': 'Movie 1',
-        },
-        {
-          'image': 'https://example.com/image2.jpg',
-          'title': 'Movie 2',
-        }
-      ].map((item) {
-        return Builder(
-          builder: (BuildContext context) {
-            return Container(
-              width: MediaQuery.of(context).size.width,
-              margin: EdgeInsets.symmetric(horizontal: 5.0),
-              decoration: BoxDecoration(
-                color: Colors.amber,
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Movie Title', // Add your movie title here
-                    style: TextStyle(fontSize: 24.0),
-                  ),
-                  SizedBox(height: 10.0),
-                  Image.network(
-                    item['image']!, // Use item['image'] as image URL
-                    fit: BoxFit.cover,
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      }).toList(),
-    );
-  }
-}
 
 
 class ResponsiveText extends StatelessWidget {
