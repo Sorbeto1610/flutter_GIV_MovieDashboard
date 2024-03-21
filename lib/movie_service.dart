@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'api-config.dart';
 import 'movie.dart';
+import 'genre.dart';
 
 class MovieService {
   static Future<List<Movie>> fetchMoviesTrend() async {
@@ -17,14 +18,14 @@ class MovieService {
       throw Exception('Failed to fetch movies 1');
     }
   }
-  static Future<List<Movie>> fetchMovies() async {
+  static Future<List<Genre>> fetchMoviesListGenre() async {
     final response = await http.get(Uri.parse(
-      '${ApiConfig.baseUrl}/movie/popular?api_key=${ApiConfig.apiKey}',
+      '${ApiConfig.baseUrl}genre/movie/list?api_key=${ApiConfig.apiKey}',
     ));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      final List<dynamic> results = data['results'];
-      return results.map((json) => Movie.fromJson(json)).toList();
+      final List<dynamic> genres = data['genres'];
+      return genres.map((json) => Genre.fromJson(json)).toList();
     } else {
       throw Exception('Failed to fetch movies 1');
     }

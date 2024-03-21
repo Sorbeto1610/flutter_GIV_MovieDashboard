@@ -5,24 +5,24 @@ import 'movie_service.dart';
 import 'movie.dart';
 
 
-class MovieExplorerApp extends StatelessWidget {
+class TrendingMoviesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Movie Explorer',
+      title: 'Trending Movies',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: MovieExplorerHomePage(),
+      home: TrendingMoviesHomePage(),
     );
   }
 }
 
-class MovieExplorerHomePage extends StatefulWidget {
+class TrendingMoviesHomePage extends StatefulWidget {
   @override
-  _MovieExplorerHomePageState createState() => _MovieExplorerHomePageState();
+   TrendingMoviesHomePageState createState() =>  TrendingMoviesHomePageState();
 }
 
-class _MovieExplorerHomePageState extends State<MovieExplorerHomePage> {
+class  TrendingMoviesHomePageState extends State <TrendingMoviesHomePage> {
   List<Movie> movies = [];
 
   @override
@@ -48,7 +48,7 @@ class _MovieExplorerHomePageState extends State<MovieExplorerHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Movie Explorer'),
+        title: Text('Trending Movies'),
       ),
       body: MovieCarouselView(movies: movies),
     );

@@ -11,6 +11,13 @@ class MovieCarouselView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (movies.isEmpty) {
+      return Container(
+        // Return an empty container or some other placeholder widget
+        child: Text('No movies available'),
+      );
+    }
+
     return CarouselSlider.builder(
       itemCount: movies.length,
       options: CarouselOptions(

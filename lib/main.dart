@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:giv/movie_caroussel_view.dart';
-import 'classFile.dart';
+import 'trendingMovies.dart';
 import 'movie_caroussel_view.dart';
 import 'api-config.dart';
 import 'movie.dart';
+import 'genre.dart';
+import 'countingGenres.dart';
 import 'image_caroussel_slider.dart';
 
 
@@ -20,7 +22,7 @@ void main() {
  }
 
 /*void main() {
-  runApp(MovieExplorerApp());
+  runApp(TrendingMoviesApp());
 }
 */
 
@@ -119,7 +121,7 @@ class BasicGridWidget extends StatelessWidget {
             width: MediaQuery.of(context).size.width,
             child: Container(
               height: MediaQuery.of(context).size.height / 2,
-              child: MovieExplorerApp(),
+              child: TrendingMoviesApp(),
             ),
           ),
 //   LE GROS CARRE BLANC FAIT PAR IRENE (en vrai faudra juste le revoir donc je l'ai mis en commentaire)
