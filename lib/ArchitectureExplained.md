@@ -31,9 +31,6 @@ ProjectName is a versatile project designed for [provide a brief description of 
 - [movie_list](#movie_listdart)
 
 
-- [movie_list_view](#movie_list_viewdart)
-
-
 - [fetchService](#fetchServicedart)
 
 
