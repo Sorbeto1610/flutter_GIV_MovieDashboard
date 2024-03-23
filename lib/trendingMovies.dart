@@ -1,21 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:giv/movie_caroussel_view.dart';
-import 'movie_list_view.dart';
-import 'movie_service.dart';
+import 'movie_carousel_view.dart';
 import 'movie.dart';
+import 'movie_list.dart';
 
-
-class TrendingMoviesApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Trending Movies',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: TrendingMoviesHomePage(),
-    );
-  }
-}
 
 class TrendingMoviesHomePage extends StatefulWidget {
   @override
@@ -23,35 +10,55 @@ class TrendingMoviesHomePage extends StatefulWidget {
 }
 
 class  TrendingMoviesHomePageState extends State <TrendingMoviesHomePage> {
-  List<Movie> movies = [];
+  List<Movie> ml = [];
 
   @override
   void initState() {
     super.initState();
-    fetchMoviesTrend();
-  }
-
-
-
-  Future<void> fetchMoviesTrend() async {
-    try {
-      final List<Movie> fetchedMoviesTrend = await MovieService.fetchMoviesTrend();
-      setState(() {
-        movies = fetchedMoviesTrend;
-      });
-    } catch (e) {
-      print('Error fetching movies: $e');
+    () async { //definition d'une fonction asyncrone pour éviter problem avec Initstate PS Résoudre avec Riverpod
+      await MovieList().fetchMoviesTrend();
+      ml = MovieList().movieList;
     }
+    ();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Trending Movies'),
+      backgroundColor: Colors.transparent, // Rendre le fond transparent
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFF91180B),
+              Color(0xFFB9220F),
+              Color(0xFFE32D13),
+              Color(0xFFF85138),
+              Color(0xFFFF6666),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: Container(
+            margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top + kToolbarHeight),
+            child: MovieCarouselView(movieList: ml),
+          ),
+        ),
       ),
-      body: MovieCarouselView(movies: movies),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent, // Rendre la barre d'app bar transparente
+        elevation: 0, // Supprimer l'ombre de l'app bar
+        title: const Text(
+          'Trending Movies',
+          style: TextStyle(
+            color: Colors.white, // Couleur du texte en blanc
+          ),
+        ),
+      ),
     );
   }
-}
 
+}

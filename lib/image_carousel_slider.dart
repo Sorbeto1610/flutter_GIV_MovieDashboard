@@ -1,8 +1,10 @@
+import 'dart:math';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
-class ImageCarousselSlider extends StatelessWidget {
-  const ImageCarousselSlider({Key? key}) : super(key: key);
+class ImageCarouselSlider extends StatelessWidget {
+  const ImageCarouselSlider({super.key});
 
   Widget buildImageCard(int index) => Card(
     margin: EdgeInsets.zero,
@@ -52,8 +54,11 @@ class ImageCarousselSlider extends StatelessWidget {
             enlargeCenterPage: true,
           ),
           items: List.generate(
-            8,
-                (index) => buildImageCard(index), // Use buildImageCard function to create items
+            10,
+              (index) {
+                int index = Random().nextInt(15);
+                return buildImageCard(index);
+              },// Use buildImageCard function to create items
           ),
         ),
       ),

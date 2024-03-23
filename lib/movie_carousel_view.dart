@@ -5,13 +5,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'api-config.dart';
 
 class MovieCarouselView extends StatelessWidget {
-  final List<Movie> movies;
+  final List<Movie> movieList;
 
-  const MovieCarouselView({required this.movies});
+  const MovieCarouselView({required this.movieList});
 
   @override
   Widget build(BuildContext context) {
-    if (movies.isEmpty) {
+    if (movieList.isEmpty) {
       return Container(
         // Return an empty container or some other placeholder widget
         child: Text('No movies available'),
@@ -19,7 +19,7 @@ class MovieCarouselView extends StatelessWidget {
     }
 
     return CarouselSlider.builder(
-      itemCount: movies.length,
+      itemCount: movieList.length,
       options: CarouselOptions(
         height: 300, // Adjust the height as needed
         viewportFraction: 0.2,
@@ -27,7 +27,7 @@ class MovieCarouselView extends StatelessWidget {
         autoPlay: true,
       ),
       itemBuilder: (context, index, realIndex) {
-        final movie = movies[index];
+        final movie = movieList[index];
         return Container(
           margin: EdgeInsets.symmetric(horizontal: 10),
           child: Stack(
@@ -45,12 +45,14 @@ class MovieCarouselView extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: EdgeInsets.all(8),
+                padding: EdgeInsets.all(2),
                 decoration: BoxDecoration(
                   color: Colors.black.withOpacity(0.5),
                   borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(15),
-                    bottomRight: Radius.circular(15),
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10),
                   ),
                 ),
                 child: Text(

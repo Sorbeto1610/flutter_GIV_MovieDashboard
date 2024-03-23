@@ -1,11 +1,10 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'api-config.dart';
 import 'movie.dart';
 import 'genre.dart';
 
-class MovieService {
+class FetchService {
   static Future<List<Movie>> fetchMoviesTrend() async {
     final response = await http.get(Uri.parse(
       '${ApiConfig.baseUrl}/trending/movie/week?api_key=${ApiConfig.apiKey}',
