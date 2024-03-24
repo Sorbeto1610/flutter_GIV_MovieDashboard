@@ -54,13 +54,17 @@ The file you are reading explaining all the files of the lib.
 
 The function imports 2 classes Movie from [movie.dart](#moviedart) & Genre from [genre.dart](#genredart).
 
-This file only have 1 function :
+This file have 2 functions :
 
 - (List<Movie> movieList, List<Genre> genreList) => countingGenreDictionary => Map<String, int> nbGenreDictionary;
+
 
 The function takes movieList and genreList (the lists from the TMDB) and compare every film from movieList with genreList to identify what are the genre of the trending movies.
 
 
+- (Map<String, int> genreCounts) => calculateGenrePercentages => (Map<String, double>);
+
+The function takes the results from the previous one and return the percentage for each category. 
 ## genre.dart
 
 
