@@ -6,6 +6,7 @@ import 'dashboardPage.dart';
 
 
 
+
 void main() {
    runApp(
      MaterialApp(
@@ -23,6 +24,8 @@ class BasicGridWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
+
       backgroundColor: Colors.black,
       body: SingleChildScrollView(
         child:Column(
@@ -69,6 +72,7 @@ class BasicGridWidget extends StatelessWidget {
           Container(
             height: MediaQuery.of(context).size.height / 1.9,
             child: dashboardPage(),
+
           ),
         ],
       ),
@@ -115,6 +119,7 @@ class BasicWhiteCard extends StatelessWidget {
     );
   }
 }
+
 
 
 

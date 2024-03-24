@@ -8,6 +8,7 @@ class Movie {
 
 
 
+
   Movie({
     required this.id,
     required this.title,
@@ -26,7 +27,6 @@ class Movie {
         posterPath: json['poster_path'],
         genreIds: json['genre_ids'],
         voteAverage: json['vote_average'].toDouble()
-
     );
   }
 }
