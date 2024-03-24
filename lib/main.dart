@@ -62,7 +62,7 @@ class BasicGridWidget extends StatelessWidget {
           ),
           SizedBox(height: 20), // Add space between title and trending movies
           Container(
-            height: MediaQuery.of(context).size.height / 1.9,
+            height: MediaQuery.of(context).size.height / 1.55,
             child: TrendingMoviesHomePage(),
           ),
           SizedBox(height: 20), // Add space between trending movies and dashboard
