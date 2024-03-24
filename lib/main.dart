@@ -146,7 +146,7 @@ class ResponsiveText extends StatelessWidget {
       style: TextStyle(
         fontSize: responsiveFontSize,
         color: textColor,
-        fontFamily: 'Arial',
+        fontFamily: 'Montserrat',
         fontWeight: FontWeight.bold,
 
         shadows: [
