@@ -6,21 +6,31 @@ import 'movie_list.dart';
 
 class TrendingMoviesHomePage extends StatefulWidget {
   @override
-   TrendingMoviesHomePageState createState() =>  TrendingMoviesHomePageState();
+  TrendingMoviesHomePageState createState() => TrendingMoviesHomePageState();
 }
 
-class  TrendingMoviesHomePageState extends State <TrendingMoviesHomePage> {
+class TrendingMoviesHomePageState extends State<TrendingMoviesHomePage> {
   List<Movie> ml = [];
 
   @override
   void initState() {
     super.initState();
-    () async { //definition d'une fonction asyncrone pour éviter problem avec Initstate PS Résoudre avec Riverpod
-      await MovieList().fetchMoviesTrend();
-      ml = MovieList().movieList;
-    }
-    ();
+    fetchTrendingMovies(); // Appel de la fonction pour récupérer les films tendance
   }
+
+  Future<void> fetchTrendingMovies() async {
+    try {
+      MovieList movieListInstance = MovieList();
+      await movieListInstance.fetchMoviesTrend();
+      setState(() {
+        ml = movieListInstance.movieList;
+      });
+    } catch (e) {
+      print('Error fetching movies: $e');
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
