@@ -1,8 +1,5 @@
 import 'genre.dart';
 import 'movie.dart';
-import 'package:flutter/material.dart';
-import 'package:pie_chart/pie_chart.dart';
-import 'fetchService.dart';
 
 Map<String, int> countingGenreDictionary(List<Movie> movieList, List<Genre> genreList) {
   Map<String, int> nbGenreDictionary = {};
