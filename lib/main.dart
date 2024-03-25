@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:giv/piechartPage2.dart';
 import 'trendingMovies.dart';
 import 'image_carousel_slider.dart';
 import 'piechartPage.dart';
@@ -79,12 +80,18 @@ class BasicGridWidget extends StatelessWidget {
               height: MediaQuery.of(context).size.height / 1,
               child: PiechartPage(),
             ),
-            SizedBox(height: 20), //
+            SizedBox(height: 20), // Add space between trending movies and pie chart
             Container(
-              height: MediaQuery.of(context).size.height / 1.1,
+              height: MediaQuery.of(context).size.height / 1.9,
+              child:piechartPage2(),
+            ),
+            SizedBox(height: 20), // Add space between pie chart and graph
+            Container(
+              height: MediaQuery.of(context).size.height,
               child: graphPage(),
             ),
           ],
+
         ),
       ),
     );
