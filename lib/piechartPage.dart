@@ -7,12 +7,12 @@ import 'countingGenres.dart';
 import 'genre.dart';
 import 'package:fl_chart/fl_chart.dart'; // Importez uniquement le PieChart de fl_chart
 
-class dashboardPage extends StatefulWidget {
+class piechartPage extends StatefulWidget {
   @override
-  dashboardPageState createState() => dashboardPageState();
+  piechartPageState createState() => piechartPageState();
 }
 
-class dashboardPageState extends State<dashboardPage> {
+class piechartPageState extends State<piechartPage> {
   late Future<List<Movie>> _moviesFuture;
   late Future<List<Genre>> _genresFuture;
 

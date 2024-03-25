@@ -36,6 +36,7 @@ dependencies:
   http: ^0.13.3
   pie_chart: ^5.4.0
   fl_chart: ^0.66.2
+  charts_flutter: ^0.12.0
 
 
 
