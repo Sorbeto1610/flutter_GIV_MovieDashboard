@@ -4,9 +4,20 @@ import 'image_carousel_slider.dart';
 import 'piechartPage.dart';
 import 'graphPage.dart';
 
+
+
+
 void main() {
   runApp(
     MaterialApp(
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.red,
+          // ···
+          brightness: Brightness.dark,
+        ),
+      ),
       title: "Project GIV",
       debugShowCheckedModeBanner: false,
       home: BasicGridWidget(),
@@ -14,15 +25,16 @@ void main() {
   );
 }
 
-class BasicGridWidget extends StatelessWidget {
-  const BasicGridWidget({Key? key}) : super(key: key);
 
+
+class BasicGridWidget extends StatelessWidget {
+  const BasicGridWidget({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SingleChildScrollView(
-        child: Column(
+        child:Column(
           children: <Widget>[
             Container(
               decoration: const BoxDecoration(
@@ -36,9 +48,7 @@ class BasicGridWidget extends StatelessWidget {
                   ],
                 ),
               ),
-              height: MediaQuery.of(context).size.height *
-                  MediaQuery.of(context).size.width /
-                  6000, // Adjust accordingly
+              height: MediaQuery.of(context).size.height * MediaQuery.of(context).size.width / 6000, // Adjust accordingly
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 5,
@@ -64,22 +74,29 @@ class BasicGridWidget extends StatelessWidget {
               height: MediaQuery.of(context).size.height / 1.55,
               child: TrendingMoviesHomePage(),
             ),
-            SizedBox(height: 20), // Add space between trending movies and pie chart
+            SizedBox(height: 20), // Add space between trending movies and dashboard
             Container(
-              height: MediaQuery.of(context).size.height / 1.9,
-              child: piechartPage(),
+              height: MediaQuery.of(context).size.height / 1,
+              child: PiechartPage(),
             ),
-            SizedBox(height: 20), // Add space between pie chart and graph
-              Container(
-                height: MediaQuery.of(context).size.height ,
-                child: graphPage(),
-              ),
+            SizedBox(height: 20), //
+            Container(
+              height: MediaQuery.of(context).size.height / 1.1,
+              child: graphPage(),
+            ),
           ],
         ),
       ),
     );
+
   }
 }
+
+
+
+
+
+
 
 class ResponsiveText extends StatelessWidget {
   final String text;
@@ -88,12 +105,14 @@ class ResponsiveText extends StatelessWidget {
   final Color shadowColor;
   final Offset shadowOffset;
 
+
   ResponsiveText({
     required this.text,
     required this.fontSize,
     required this.textColor,
     required this.shadowColor,
     required this.shadowOffset,
+
   });
 
   @override
@@ -108,10 +127,12 @@ class ResponsiveText extends StatelessWidget {
         color: textColor,
         fontFamily: 'Montserrat',
         fontWeight: FontWeight.bold,
+
         shadows: [
           Shadow(
             color: shadowColor,
             offset: shadowOffset,
+
           ),
         ],
       ),
