@@ -11,6 +11,14 @@ import 'package:charts_flutter/flutter.dart' as charts;
 void main() {
    runApp(
      MaterialApp(
+       theme: ThemeData(
+         useMaterial3: true,
+         colorScheme: ColorScheme.fromSeed(
+           seedColor: Colors.red,
+           // ···
+           brightness: Brightness.dark,
+         ),
+       ),
        title: "Project GIV",
        debugShowCheckedModeBanner: false,
        home: BasicGridWidget(),
@@ -69,8 +77,8 @@ class BasicGridWidget extends StatelessWidget {
           ),
           SizedBox(height: 20), // Add space between trending movies and dashboard
           Container(
-            height: MediaQuery.of(context).size.height / 1.9,
-            child: piechartPage(),
+            height: MediaQuery.of(context).size.height / 1,
+            child: PiechartPage(),
           ),
           SizedBox(height: 20), //
           Container(

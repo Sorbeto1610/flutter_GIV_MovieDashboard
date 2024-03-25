@@ -45,6 +45,8 @@ class TrendingMoviesHomePageState extends State<TrendingMoviesHomePage> {
               Color(0xFFE32D13),
               Color(0xFFF85138),
               Color(0xFFFF6666),
+              Color(0xFFF85138),
+              Color(0xFFE32D13),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
