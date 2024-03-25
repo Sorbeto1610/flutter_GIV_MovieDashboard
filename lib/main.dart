@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'trendingMovies.dart';
 import 'image_carousel_slider.dart';
 import 'piechartPage.dart';
+import 'graphPage.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 
 
 
@@ -76,7 +78,7 @@ class BasicGridWidget extends StatelessWidget {
           SizedBox(height: 20), //
           Container(
             height: MediaQuery.of(context).size.height / 1.9,
-            child: ,
+            child: graphPage(),
           ),
         ],
       ),
