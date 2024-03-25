@@ -94,7 +94,7 @@ class _graphPageState extends State<graphPage> {
         }).toList(),
       ],
       style: TextStyle(fontSize: 16.0), // Style pour le texte du bouton déroulant
-      dropdownColor: Colors.grey[200], // Couleur du menu déroulant
+      dropdownColor: Colors.red[400], // Couleur du menu déroulant
       elevation: 5, // Élévation du menu déroulant
       icon: Icon(Icons.arrow_drop_down), // Icône du bouton déroulant
       isExpanded: true, // Définir la largeur du bouton déroulant sur la largeur de son parent
