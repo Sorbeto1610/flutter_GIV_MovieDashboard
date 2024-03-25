@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'trendingMovies.dart';
 import 'image_carousel_slider.dart';
-import 'dashboardPage.dart';
+import 'piechartPage.dart';
 
 
 
@@ -71,8 +71,12 @@ class BasicGridWidget extends StatelessWidget {
           SizedBox(height: 20), // Add space between trending movies and dashboard
           Container(
             height: MediaQuery.of(context).size.height / 1.9,
-            child: dashboardPage(),
-
+            child: piechartPage(),
+          ),
+          SizedBox(height: 20), //
+          Container(
+            height: MediaQuery.of(context).size.height / 1.9,
+            child: ,
           ),
         ],
       ),
@@ -84,41 +88,6 @@ class BasicGridWidget extends StatelessWidget {
 
 
 
-class BasicWhiteCard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
-      elevation: 4.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Card Title',
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 8.0),
-            Text(
-              'Card Content goes here.',
-              style: TextStyle(
-                fontSize: 16.0,
-                color: Colors.black87,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 
 
