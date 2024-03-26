@@ -60,23 +60,23 @@ class _PiechartPageState extends State<PiechartPage> {
                       borderRadius: BorderRadius.circular(20.0), // Rounded corners
                     ),
                     child: SizedBox(
-                      height: 3000,
-                      width: 3000,
+                      height: 2000,
+                      width: 2000,
                       child: Stack(
                         children: [
                           PieChart(
                             PieChartData(
-                              sections: genrePercentages.entries.map((entry) {
+                              sections: genreCounts.entries.map((entry) {
                                 return PieChartSectionData(
                                   color: Colors.primaries.elementAt(
                                     genrePercentages.keys
                                         .toList()
                                         .indexOf(entry.key),
                                   ),
-                                  value: entry.value,
-                                  title: '',
-                                  titlePositionPercentageOffset: 0.8,
-                                  radius: 100,
+                                  value: entry.value.toDouble(),
+                                  title: '${entry.value}',
+                                  titlePositionPercentageOffset: 1.4,
+                                  radius: 50,
                                   titleStyle: TextStyle(
                                     fontSize: 25,
                                     fontWeight: FontWeight.bold,

@@ -77,14 +77,23 @@ class BasicGridWidget extends StatelessWidget {
             ),
             SizedBox(height: 20), // Add space between trending movies and dashboard
             Container(
-              height: MediaQuery.of(context).size.height / 1,
-              child: PiechartPage(),
-            ),
-            SizedBox(height: 20), // Add space between trending movies and pie chart
-            Container(
-              height: MediaQuery.of(context).size.height / 1.9,
-              child:piechartPage2(),
-            ),
+              child: Row(
+                  children: <Widget>[
+                    Container(
+                      height: MediaQuery.of(context).size.height / 1,
+                      width: MediaQuery.of(context).size.width/2,
+                      child: PiechartPage(),
+                    ),
+                    SizedBox(height: 20), // Add space between trending movies and pie chart
+                    Container(
+                      height: MediaQuery.of(context).size.height / 1,
+                      width: MediaQuery.of(context).size.width/2,
+                      child:piechartPage2(),
+                    ),
+                  ],
+                ),
+              ),
+
             SizedBox(height: 20), // Add space between pie chart and graph
             Container(
               height: MediaQuery.of(context).size.height,

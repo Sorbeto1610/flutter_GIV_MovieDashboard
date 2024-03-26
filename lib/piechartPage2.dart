@@ -79,36 +79,112 @@ class _piechartPage2State extends State<piechartPage2> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Pie Chart 2'),
-      ),
-      body: FutureBuilder(
-        future: Future.wait([_moviesFuture, _genresFuture]),
-        builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: PieChart(
-                PieChartData(
-                  sections: _genrePopularityMap.entries.map((entry) {
-                    return PieChartSectionData(
-                      value: entry.value,
-                      title: '${entry.key}\n${entry.value.toStringAsFixed(1)}%', // Include percentage in title
-                      color: _genreColors[_genrePopularityMap.keys.toList().indexOf(entry.key)],
-                      showTitle: true, // Show title with percentage
-                    );
-                  }).toList(),
-                ),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              title: Text(
+                'Popularity of genre',
+                style: TextStyle(color: Colors.white),
               ),
-            );
-          }
-        },
+              elevation: 0, // Remove elevation
+              backgroundColor: Colors.transparent,
+            ),
+            body: FutureBuilder(
+              future: Future.wait([_moviesFuture, _genresFuture]),
+              builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else {
+                  return Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Center(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[900],
+                            borderRadius: BorderRadius.circular(20.0), // Rounded corners
+                          ),
+                          child: SizedBox(
+                            height: 2000,
+                            width: 2000,
+                            child: Stack(
+                              children: [
+                                PieChart(
+                                  PieChartData(
+                                    sections: _genrePopularityMap.entries.map((entry) {
+                                      return PieChartSectionData(
+                                        value: entry.value,
+                                        title: '${entry.key}\n${entry.value.toStringAsFixed(1)}%', // Include percentage in title
+                                        color: _genreColors[_genrePopularityMap.keys.toList().indexOf(entry.key)],
+                                        showTitle: true, // Show title with percentage
+                                        titlePositionPercentageOffset: 1.4,
+                                        radius: 50,
+                                        titleStyle: TextStyle(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      );
+                                    }).toList(),
+                                    borderData: FlBorderData(
+                                      show: true, // Afficher les bordures
+                                      border: Border.all(
+                                        color: Colors.white, // Couleur des bordures
+                                        width: 7, // Largeur des bordures
+                                      ),
+                                    ),
+                                    sectionsSpace: 7,
+                                    centerSpaceRadius: 110,
+                                    startDegreeOffset: -90,
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 20, // Ajustez la position verticale selon vos préférences
+                                  left: 0,
+                                  right: 0,
+                                  child: Wrap(
+                                    alignment: WrapAlignment.center,
+                                    children: _genrePopularityMap.entries.map((entry) {
+                                      final title = '${entry.key} (${entry.value.toStringAsFixed(1)}%)';
+                                      final color = Colors.primaries[entry.key.length % Colors.primaries.length];
+
+                                      return Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Container(
+                                              width: 10,
+                                              height: 10,
+                                              color: color,
+                                            ),
+                                            SizedBox(width: 5),
+                                            Text(title, style: TextStyle(color: Colors.white)),
+                                          ],
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+
+
+                              ],
+
+                            ),
+                          ),
+                        ),
+                      )
+
+                  );
+                }
+              },
+            ),
+
       ),
     );
+
   }
 }
