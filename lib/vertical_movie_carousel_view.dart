@@ -4,10 +4,10 @@ import 'movie.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'api-config.dart';
 
-class MovieCarouselView extends StatelessWidget {
+class VerticalCarouselPoster extends StatelessWidget {
   final List<Movie> movieList;
 
-  const MovieCarouselView({required this.movieList});
+  const VerticalCarouselPoster({required this.movieList});
 
   @override
   Widget build(BuildContext context) {
@@ -18,13 +18,32 @@ class MovieCarouselView extends StatelessWidget {
       );
     }
 
-    return CarouselSlider.builder(
+    return SizedBox(
+      height: MediaQuery.of(context).size.height *
+          MediaQuery.of(context).size.width /
+          (2.5*MediaQuery.of(context).size.width + 1.5*MediaQuery.of(context).size.height),
+    child: ShaderMask(
+    shaderCallback: (Rect bounds) {
+    return LinearGradient(
+    colors: [Colors.black, Colors.transparent, Colors.black],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    ).createShader(bounds);
+    },
+    blendMode: BlendMode.dstOut, // Use dstOut blend mode for transparency
+    child: CarouselSlider.builder(
       itemCount: movieList.length,
       options: CarouselOptions(
-        height: 300, // Adjust the height as needed
-        viewportFraction: 0.2,
+        scrollDirection: Axis.vertical,
+        height: MediaQuery.of(context).size.height *
+            MediaQuery.of(context).size.width /
+            (2.5*MediaQuery.of(context).size.width + 1.5*MediaQuery.of(context).size.height),
         enableInfiniteScroll: true,
         autoPlay: true,
+        autoPlayInterval: Duration(seconds: 3),
+        autoPlayAnimationDuration: Duration(milliseconds: 3000),
+        autoPlayCurve: Curves.linear,
+        enlargeCenterPage: true,
       ),
       itemBuilder: (context, index, realIndex) {
         final movie = movieList[index];
@@ -49,6 +68,9 @@ class MovieCarouselView extends StatelessWidget {
           ),
         );
       },
+    ),
+    ),
     );
+
   }
 }

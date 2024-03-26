@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
@@ -55,10 +54,10 @@ class ImageCarouselSlider extends StatelessWidget {
           ),
           items: List.generate(
             10,
-              (index) {
-                int index = Random().nextInt(15);
-                return buildImageCard(index);
-              },// Use buildImageCard function to create items
+                (index) {
+              int index = Random().nextInt(15);
+              return buildImageCard(index);
+            },// Use buildImageCard function to create items
           ),
         ),
       ),
