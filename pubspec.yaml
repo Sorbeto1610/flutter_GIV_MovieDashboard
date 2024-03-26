@@ -32,11 +32,13 @@ dependencies:
   carousel_slider: ^4.0.0
   flutter:
     sdk: flutter
+
   cached_network_image: ^3.0.0
   http: ^0.13.3
   pie_chart: ^5.4.0
   fl_chart: ^0.66.2
   charts_flutter: ^0.12.0
+
 
 
 
@@ -60,7 +62,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
+  assets:
+    - assets/clap.gif
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
