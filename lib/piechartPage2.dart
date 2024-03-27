@@ -13,7 +13,6 @@ class _PiechartPage2State extends State<PiechartPage2> {
   late Future<List<Movie>> _moviesFuture;
   late Future<List<Genre>> _genresFuture;
   late Map<String, double> _genrePopularityMap = {};
-  List<Color> _genreColors = [];
 
   @override
   void initState() {
@@ -68,7 +67,6 @@ class _PiechartPage2State extends State<PiechartPage2> {
 
     setState(() {
       _genrePopularityMap = genrePopularityMap;
-      _genreColors = genreColors;
     });
   }
 
@@ -91,6 +89,7 @@ class _PiechartPage2State extends State<PiechartPage2> {
             'Popularity of genre',
             style: TextStyle(color: Colors.white),
           ),
+          centerTitle: true,
           elevation: 0,
           backgroundColor: Colors.transparent,
         ),
@@ -126,7 +125,7 @@ class _PiechartPage2State extends State<PiechartPage2> {
                                         return PieChartSectionData(
                                           value: entry.value,
                                           title: '${entry.key}',
-                                          color: _genreColors[_genrePopularityMap.keys.toList().indexOf(entry.key)],
+                                          color: Colors.primaries[_genrePopularityMap.keys.toList().indexOf(entry.key)],
                                           showTitle: true,
                                           titlePositionPercentageOffset: 1.4,
                                           radius: constraints.maxWidth > constraints.maxHeight
@@ -162,8 +161,8 @@ class _PiechartPage2State extends State<PiechartPage2> {
                             Wrap(
                               alignment: WrapAlignment.center,
                               children: _genrePopularityMap.entries.map((entry) {
-                                final title = '${entry.key} (${entry.value.toStringAsFixed(1)}%)';
-                                final color = Colors.primaries[entry.key.length % Colors.primaries.length];
+                                final title = ' ${entry.key} (${entry.value.toStringAsFixed(1)}%) ';
+                                final color = Colors.primaries[_genrePopularityMap.keys.toList().indexOf(entry.key)];
 
                                 return Container(
                                   margin: EdgeInsets.only(bottom: 5),

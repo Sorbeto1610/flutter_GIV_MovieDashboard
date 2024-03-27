@@ -32,6 +32,7 @@ class _PiechartPageState extends State<PiechartPage> {
             'Quantity of movies per genre',
             style: TextStyle(color: Colors.white),
           ),
+          centerTitle: true,
           elevation: 0, // Remove elevation
           backgroundColor: Colors.transparent,
         ),
