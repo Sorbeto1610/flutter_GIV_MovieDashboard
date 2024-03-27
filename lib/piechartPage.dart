@@ -51,6 +51,17 @@ class _PiechartPageState extends State<PiechartPage> {
               final Map<String, double> genrePercentages =
               calculateGenrePercentages(genreCounts);
 
+              // Trier les sections du pie chart par ordre alphabétique des genres
+              final sortedGenreCounts = genreCounts.entries.toList()
+                ..sort((a, b) => a.key.compareTo(b.key));
+
+              // Créer une liste de couleurs primaires triées par ordre alphabétique des genres
+              final sortedPrimaryColors = sortedGenreCounts.map((entry) {
+                final genreIndex = genres.indexWhere((genre) => genre.name == entry.key);
+                final colorIndex = genreIndex % Colors.primaries.length;
+                return Colors.primaries[colorIndex];
+              }).toList();
+
               return Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Center(
@@ -71,13 +82,9 @@ class _PiechartPageState extends State<PiechartPage> {
                                   aspectRatio: 1.0,
                                   child: PieChart(
                                     PieChartData(
-                                      sections: genreCounts.entries.map((entry) {
+                                      sections: sortedGenreCounts.map((entry) {
                                         return PieChartSectionData(
-                                          color: Colors.primaries.elementAt(
-                                            genrePercentages.keys
-                                                .toList()
-                                                .indexOf(entry.key),
-                                          ),
+                                          color: sortedPrimaryColors[sortedGenreCounts.indexOf(entry)],
                                           value: entry.value.toDouble(),
                                           title: '${entry.value}',
                                           titlePositionPercentageOffset: 1.4,
@@ -113,14 +120,10 @@ class _PiechartPageState extends State<PiechartPage> {
                             SizedBox(height: 20),
                             Wrap(
                               alignment: WrapAlignment.center,
-                              children: genrePercentages.entries.map((entry) {
+                              children: sortedGenreCounts.map((entry) {
                                 final title =
-                                    ' ${entry.key} (${entry.value.toStringAsFixed(1)}%)  ';
-                                final color = Colors.primaries.elementAt(
-                                  genrePercentages.keys
-                                      .toList()
-                                      .indexOf(entry.key),
-                                );
+                                    ' ${entry.key} (${genrePercentages[entry.key]!.toStringAsFixed(1)}%)  ';
+                                final color = sortedPrimaryColors[sortedGenreCounts.indexOf(entry)];
 
                                 return Container(
                                   margin: EdgeInsets.only(bottom: 5),
