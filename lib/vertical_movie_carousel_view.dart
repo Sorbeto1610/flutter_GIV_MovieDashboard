@@ -14,18 +14,20 @@ class VerticalCarouselPoster extends StatelessWidget {
     if (movieList.isEmpty) {
       return Container(
         // Return an empty container or some other placeholder widget
-        child: Text('No movies available'),
+        child: Text(' '),
       );
     }
 
+    // Mélanger la liste de films
+    movieList.shuffle();
+
     return SizedBox(
-      height: MediaQuery.of(context).size.height *
-          MediaQuery.of(context).size.width /
-          (2.5*MediaQuery.of(context).size.width + 1.5*MediaQuery.of(context).size.height),
-    child: ShaderMask(
+      height: MediaQuery.of(context).size.height,
+
+        child: ShaderMask(
     shaderCallback: (Rect bounds) {
     return LinearGradient(
-    colors: [Colors.black, Colors.transparent, Colors.black],
+    colors: [Colors.black, Colors.transparent,Colors.transparent, Colors.black],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
     ).createShader(bounds);
@@ -35,20 +37,18 @@ class VerticalCarouselPoster extends StatelessWidget {
       itemCount: movieList.length,
       options: CarouselOptions(
         scrollDirection: Axis.vertical,
-        height: MediaQuery.of(context).size.height *
-            MediaQuery.of(context).size.width /
-            (2.5*MediaQuery.of(context).size.width + 1.5*MediaQuery.of(context).size.height),
+        height: MediaQuery.of(context).size.height,
         enableInfiniteScroll: true,
         autoPlay: true,
-        autoPlayInterval: Duration(seconds: 3),
-        autoPlayAnimationDuration: Duration(milliseconds: 3000),
+        autoPlayInterval: Duration(seconds: 2),
+        autoPlayAnimationDuration: Duration(milliseconds: 2000),
         autoPlayCurve: Curves.linear,
         enlargeCenterPage: true,
       ),
       itemBuilder: (context, index, realIndex) {
         final movie = movieList[index];
         return Container(
-          margin: EdgeInsets.symmetric(horizontal: 10),
+
           child: Stack(
             alignment: Alignment.bottomCenter, // Align the title text at the bottom
             children: [
@@ -56,10 +56,7 @@ class VerticalCarouselPoster extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15),
                 child: CachedNetworkImage(
                   imageUrl: '${ApiConfig.imageBaseUrl}${movie.posterPath}',
-                  width: 200,
-                  height: 300,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => CircularProgressIndicator(),
+                  placeholder: (context, url) => Image.asset('assets/clap.gif'),
                   errorWidget: (context, url, error) => Icon(Icons.error),
                 ),
               ),
