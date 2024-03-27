@@ -1,54 +1,110 @@
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'movie.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'api-config.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
-class MovieCarouselView extends StatelessWidget {
+class MoviePopup extends StatelessWidget {
+  final String randomText;
+
+  const MoviePopup({required this.randomText});
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Titre du film'),
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: <Widget>[
+            Text('Description: $randomText'),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: Text('Fermer'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class MovieCarouselView extends StatefulWidget {
   final List<Movie> movieList;
 
   const MovieCarouselView({required this.movieList});
 
   @override
+  _MovieCarouselViewState createState() => _MovieCarouselViewState();
+}
+
+class _MovieCarouselViewState extends State<MovieCarouselView> {
+  int? hoveredIndex;
+
+  @override
   Widget build(BuildContext context) {
-    if (movieList.isEmpty) {
+    if (widget.movieList.isEmpty) {
       return Container(
-        // Return an empty container or some other placeholder widget
-        child: Text('No movies available'),
+        child: Text('Aucun film disponible'),
       );
     }
 
-    // Calculate the number of items to display based on screen width
     int numberOfItems = (MediaQuery.of(context).size.width / 200).floor();
 
     return CarouselSlider.builder(
-      itemCount: movieList.length,
+      itemCount: widget.movieList.length,
       options: CarouselOptions(
-        height: 300, // Adjust the height as needed
-        viewportFraction: 1 / numberOfItems.toDouble(), // Adjusted viewportFraction
+        height: 300,
+        viewportFraction: 1 / numberOfItems.toDouble(),
         enableInfiniteScroll: true,
         autoPlay: true,
       ),
       itemBuilder: (context, index, realIndex) {
-        final movie = movieList[index];
-        return Container(
-          margin: EdgeInsets.symmetric(horizontal: 10),
-          child: Stack(
-            alignment: Alignment.bottomCenter, // Align the title text at the bottom
-            children: [
-              ClipRRect(
+        final movie = widget.movieList[index];
+        return GestureDetector(
+          onTap: () {
+            final random = Random();
+            final randomText = 'Texte aléatoire ${random.nextInt(100)}';
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return MoviePopup(randomText: randomText);
+              },
+            );
+          },
+          child: AnimatedContainer(
+            duration: Duration(milliseconds: 200),
+            transform: Matrix4.identity()..scale((hoveredIndex == index) ? 1.1 : 1.0),
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 10),
+              child: ClipRRect(
                 borderRadius: BorderRadius.circular(15),
-                child: CachedNetworkImage(
-                  imageUrl: '${ApiConfig.imageBaseUrl}${movie.posterPath}',
-                  width: 200,
-                  height: 300,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Image.asset('assets/clap.gif'),
-                  errorWidget: (context, url, error) => Icon(Icons.error),
+                child: MouseRegion(
+                  onEnter: (_) {
+                    setState(() {
+                      hoveredIndex = index;
+                    });
+                  },
+                  onExit: (_) {
+                    setState(() {
+                      hoveredIndex = null;
+                    });
+                  },
+                  child: CachedNetworkImage(
+                    imageUrl: '${ApiConfig.imageBaseUrl}${movie.posterPath}',
+                    width: 200,
+                    height: 300,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Image.asset('assets/clap.gif'),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                  ),
                 ),
               ),
-
-            ],
+            ),
           ),
         );
       },
