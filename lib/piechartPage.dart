@@ -39,7 +39,7 @@ class _PiechartPageState extends State<PiechartPage> {
           future: Future.wait([_moviesFuture, _genresFuture]),
           builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return Center(child: Image.asset('assets/clap.gif'));
             } else if (snapshot.hasError) {
               return Center(child: Text('Erreur: ${snapshot.error}'));
             } else {
@@ -55,57 +55,71 @@ class _PiechartPageState extends State<PiechartPage> {
                 padding: const EdgeInsets.all(20.0),
                 child: Center(
                   child: Container(
+                    constraints: BoxConstraints.expand(), // Ensure the container fills the available space
                     decoration: BoxDecoration(
                       color: Colors.grey[900],
                       borderRadius: BorderRadius.circular(20.0), // Rounded corners
                     ),
-                    child: SizedBox(
-                      height: 2000,
-                      width: 2000,
-                      child: Stack(
-                        children: [
-                          PieChart(
-                            PieChartData(
-                              sections: genreCounts.entries.map((entry) {
-                                return PieChartSectionData(
-                                  color: Colors.primaries.elementAt(
-                                    genrePercentages.keys
-                                        .toList()
-                                        .indexOf(entry.key),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        return Column(
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: AspectRatio(
+                                  aspectRatio: 1.0,
+                                  child: PieChart(
+                                    PieChartData(
+                                      sections: genreCounts.entries.map((entry) {
+                                        return PieChartSectionData(
+                                          color: Colors.primaries.elementAt(
+                                            genrePercentages.keys
+                                                .toList()
+                                                .indexOf(entry.key),
+                                          ),
+                                          value: entry.value.toDouble(),
+                                          title: '${entry.value}',
+                                          titlePositionPercentageOffset: 1.4,
+                                          radius: constraints.maxWidth > constraints.maxHeight
+                                              ? constraints.maxHeight / 8.5 // Adjust based on maxHeight for landscape mode
+                                              : constraints.maxWidth / 8.5, // Adjust based on maxWidth for portrait mode
+                                          titleStyle: TextStyle(
+                                            fontSize: constraints.maxWidth > constraints.maxHeight
+                                                ? constraints.maxHeight * 0.04 // Adjust font size based on maxHeight for landscape mode
+                                                : constraints.maxWidth * 0.04, // Adjust font size based on maxWidth for portrait mode
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        );
+                                      }).toList(),
+                                      borderData: FlBorderData(
+                                        show: true, // Afficher les bordures
+                                        border: Border.all(
+                                          color: Colors.white, // Couleur des bordures
+                                          width: 7, // Largeur des bordures
+                                        ),
+                                      ),
+                                      sectionsSpace: 7,
+                                      centerSpaceRadius: constraints.maxWidth > constraints.maxHeight
+                                          ? constraints.maxHeight / 5 // Adjust based on maxHeight for landscape mode
+                                          : constraints.maxWidth / 5, // Adjust based on maxWidth for portrait mode
+                                      startDegreeOffset: -90,
+                                    ),
                                   ),
-                                  value: entry.value.toDouble(),
-                                  title: '${entry.value}',
-                                  titlePositionPercentageOffset: 1.4,
-                                  radius: 50,
-                                  titleStyle: TextStyle(
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                );
-                              }).toList(),
-                              borderData: FlBorderData(
-                                show: true, // Afficher les bordures
-                                border: Border.all(
-                                  color: Colors.white, // Couleur des bordures
-                                  width: 7, // Largeur des bordures
                                 ),
                               ),
-                              sectionsSpace: 7,
-                              centerSpaceRadius: 110,
-                              startDegreeOffset: -90,
                             ),
-                          ),
-                          Positioned(
-                            bottom: 20, // ajustez la position verticale selon vos préférences
-                            left: 0,
-                            right: 0,
-                            child: Wrap(
+                            SizedBox(height: 20),
+                            Wrap(
                               alignment: WrapAlignment.center,
                               children: genrePercentages.entries.map((entry) {
-                                final title = ' ${entry.key} (${entry.value.toStringAsFixed(1)}%)  ';
+                                final title =
+                                    ' ${entry.key} (${entry.value.toStringAsFixed(1)}%)  ';
                                 final color = Colors.primaries.elementAt(
-                                  genrePercentages.keys.toList().indexOf(entry.key),
+                                  genrePercentages.keys
+                                      .toList()
+                                      .indexOf(entry.key),
                                 );
 
                                 return Container(
@@ -119,16 +133,16 @@ class _PiechartPageState extends State<PiechartPage> {
                                         color: color,
                                       ),
                                       SizedBox(width: 5),
-                                      Text(title, style: TextStyle(color: Colors.white)),
+                                      Text(title,
+                                          style: TextStyle(color: Colors.white)),
                                     ],
                                   ),
                                 );
                               }).toList(),
                             ),
-                          ),
-
-                        ],
-                      ),
+                          ],
+                        );
+                      },
                     ),
                   ),
                 ),
