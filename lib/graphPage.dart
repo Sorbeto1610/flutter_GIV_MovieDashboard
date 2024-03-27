@@ -30,19 +30,34 @@ class _graphPageState extends State<graphPage> {
       appBar: AppBar(
         title: Text('Movie Popularity Chart'),
       ),
-      body: Center(
-        child: FutureBuilder<List<Genre>>(
-          future: _genresFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else {
-              _genresList = snapshot.data!;
-              return _buildBody();
-            }
-          },
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFF91180B),
+              Color(0xFFB9220F),
+              Color(0xFFE32D13),
+              Color(0xFFF85138),
+              Color(0xFFFF6666),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Center(
+          child: FutureBuilder<List<Genre>>(
+            future: _genresFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                _genresList = snapshot.data!;
+                return _buildBody();
+              }
+            },
+          ),
         ),
       ),
     );
@@ -72,9 +87,8 @@ class _graphPageState extends State<graphPage> {
       ],
     );
   }
-
   Widget _buildGenreDropdown() {
-    return DropdownButton<Genre>(
+    return DropdownButtonFormField<Genre>(
       value: _selectedGenre,
       onChanged: (Genre? newValue) {
         setState(() {
@@ -93,14 +107,17 @@ class _graphPageState extends State<graphPage> {
           );
         }).toList(),
       ],
-      style: TextStyle(fontSize: 16.0), // Style pour le texte du bouton déroulant
-      dropdownColor: Colors.red[400], // Couleur du menu déroulant
-      elevation: 5, // Élévation du menu déroulant
-      icon: Icon(Icons.arrow_drop_down), // Icône du bouton déroulant
-      isExpanded: true, // Définir la largeur du bouton déroulant sur la largeur de son parent
-      underline: Container(), // Retirer la ligne en dessous du bouton déroulant
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.black,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        hintText: 'Select a genre', // Texte d'invite pour indiquer qu'on peut cliquer
+      ),
     );
   }
+
 
   Widget _buildGraph(List<Movie> movies) {
     // Filtrer les films par genre sélectionné
@@ -113,13 +130,23 @@ class _graphPageState extends State<graphPage> {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset('assets/loading.gif'), // Remplacer 'assets/loading.gif' par le chemin de votre GIF
+          // Adjust width and height of the Image.asset widget to make it smaller
+          Image.asset(
+            'assets/clap.gif',
+            width: 100, // Adjust width as needed
+            height: 100, // Adjust height as needed
+          ),
           SizedBox(height: 20),
-          Text('Aucun film à afficher'),
+          // Set the style of the Text widget to make the text white
+          Text(
+            'Movie in the making...',
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
         ],
       );
     }
-
     // Tri de la liste de films filtrée par popularité (du moins populaire au plus populaire)
     filteredMovies.sort((a, b) => a.popularity.compareTo(b.popularity));
 
@@ -131,6 +158,13 @@ class _graphPageState extends State<graphPage> {
       seriesList,
       animate: true,
       vertical: true,
+      behaviors: [
+        // Add an axis spec to specify a custom measure axis label.
+        charts.ChartTitle('Movies', behaviorPosition: charts.BehaviorPosition.bottom, titleOutsideJustification: charts.OutsideJustification.middleDrawArea),
+        charts.ChartTitle('Popularity', behaviorPosition: charts.BehaviorPosition.start, titleOutsideJustification: charts.OutsideJustification.middleDrawArea),
+        // Rotate the titles on domain axis.
+
+      ],
     );
   }
 }
