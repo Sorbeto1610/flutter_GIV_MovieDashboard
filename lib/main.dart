@@ -88,19 +88,19 @@ class _BasicGridWidgetState extends State<BasicGridWidget> {
               ),
               height: MediaQuery.of(context).size.height *
                   MediaQuery.of(context).size.width /
-                  (2.5*MediaQuery.of(context).size.width + 1.5*MediaQuery.of(context).size.height),
+                  (2.7*MediaQuery.of(context).size.width + 1.7*MediaQuery.of(context).size.height),
                 child: LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
                     final double screenWidth = constraints.maxWidth;
-                    final int crossAxisCount = (screenWidth / (200 + 10))
+                    final int crossAxisCount = (screenWidth / (200 + 10)).floor()
                         .floor(); // Adjust itemWidth and crossAxisSpacing according to your needs
                     return GridView.builder(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: crossAxisCount,
-                        mainAxisSpacing: 3.0,
-                        crossAxisSpacing: 8.0,
+                        mainAxisSpacing: 0.0,
+                        crossAxisSpacing: 30.0,
                       ),
-                      itemCount: 10,
+                      itemCount: 7,
                       itemBuilder: (context, index) {
                         return TrendingMoviesVerticalHomePage();
                       },
@@ -134,7 +134,7 @@ class _BasicGridWidgetState extends State<BasicGridWidget> {
                   Container(
                     height: MediaQuery.of(context).size.height / 1,
                     width: MediaQuery.of(context).size.width / 2,
-                    child: piechartPage2(),
+                    child: PiechartPage2(),
                   ),
                 ],
               ),
