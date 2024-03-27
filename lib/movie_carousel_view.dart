@@ -18,11 +18,14 @@ class MovieCarouselView extends StatelessWidget {
       );
     }
 
+    // Calculate the number of items to display based on screen width
+    int numberOfItems = (MediaQuery.of(context).size.width / 200).floor();
+
     return CarouselSlider.builder(
       itemCount: movieList.length,
       options: CarouselOptions(
         height: 300, // Adjust the height as needed
-        viewportFraction: 0.2,
+        viewportFraction: 1 / numberOfItems.toDouble(), // Adjusted viewportFraction
         enableInfiniteScroll: true,
         autoPlay: true,
       ),
@@ -40,7 +43,7 @@ class MovieCarouselView extends StatelessWidget {
                   width: 200,
                   height: 300,
                   fit: BoxFit.cover,
-                  placeholder: (context, url) => CircularProgressIndicator(),
+                  placeholder: (context, url) => Image.asset('assets/clap.gif'),
                   errorWidget: (context, url, error) => Icon(Icons.error),
                 ),
               ),

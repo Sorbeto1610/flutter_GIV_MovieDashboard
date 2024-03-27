@@ -4,12 +4,12 @@ import 'genre.dart';
 import 'movie.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-class piechartPage2 extends StatefulWidget {
+class PiechartPage2 extends StatefulWidget {
   @override
-  _piechartPage2State createState() => _piechartPage2State();
+  _PiechartPage2State createState() => _PiechartPage2State();
 }
 
-class _piechartPage2State extends State<piechartPage2> {
+class _PiechartPage2State extends State<PiechartPage2> {
   late Future<List<Movie>> _moviesFuture;
   late Future<List<Genre>> _genresFuture;
   late Map<String, double> _genrePopularityMap = {};
@@ -27,9 +27,6 @@ class _piechartPage2State extends State<piechartPage2> {
     final List<Movie> movies = await _moviesFuture;
     final List<Genre> genres = await _genresFuture;
 
-    print('Movies: $movies'); // Add this line to check the retrieved movies
-    print('Genres: $genres');
-
     Map<String, double> genrePopularityMap = {};
     List<Color> genreColors = [];
 
@@ -40,8 +37,6 @@ class _piechartPage2State extends State<piechartPage2> {
       genreColors.add(getGenreColor(genre.name));
     }
 
-    print('Genre Popularity Map: $genrePopularityMap');
-
     setState(() {
       _genrePopularityMap = genrePopularityMap;
       _genreColors = genreColors;
@@ -49,11 +44,6 @@ class _piechartPage2State extends State<piechartPage2> {
   }
 
   Color getGenreColor(String genreName) {
-    // Function to get color based on genre name
-    // You can use the same logic as the first pie chart
-    // or define a predefined list of colors and assign them to genres
-    // This function returns a color based on the genre name
-    // You can implement your own logic here to assign colors
     return Colors.primaries[genreName.length % Colors.primaries.length];
   }
 
@@ -69,12 +59,10 @@ class _piechartPage2State extends State<piechartPage2> {
     }
 
     if (totalPopularity == 0) {
-      return 0; // Pour éviter une division par zéro
+      return 0; // To avoid division by zero
     }
 
-    double genrePopularityPercentage = (genrePopularity / totalPopularity) * 100;
-    print('Genre ID: $genreId, Popularity: $genrePopularityPercentage'); // Ajouter cette ligne pour vérifier la popularité calculée
-    return genrePopularityPercentage;
+    return (genrePopularity / totalPopularity) * 100;
   }
 
   @override
@@ -83,76 +71,88 @@ class _piechartPage2State extends State<piechartPage2> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: Colors.transparent,
-            appBar: AppBar(
-              title: Text(
-                'Popularity of genre',
-                style: TextStyle(color: Colors.white),
-              ),
-              elevation: 0, // Remove elevation
-              backgroundColor: Colors.transparent,
-            ),
-            body: FutureBuilder(
-              future: Future.wait([_moviesFuture, _genresFuture]),
-              builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else {
-                  return Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Center(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[900],
-                            borderRadius: BorderRadius.circular(20.0), // Rounded corners
-                          ),
-                          child: SizedBox(
-                            height: 2000,
-                            width: 2000,
-                            child: Stack(
-                              children: [
-                                PieChart(
-                                  PieChartData(
-                                    sections: _genrePopularityMap.entries.map((entry) {
-                                      return PieChartSectionData(
-                                        value: entry.value,
-                                        title: '${entry.key}\n${entry.value.toStringAsFixed(1)}%', // Include percentage in title
-                                        color: _genreColors[_genrePopularityMap.keys.toList().indexOf(entry.key)],
-                                        showTitle: true, // Show title with percentage
-                                        titlePositionPercentageOffset: 1.4,
-                                        radius: 50,
-                                        titleStyle: TextStyle(
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
+        appBar: AppBar(
+          title: Text(
+            'Popularity of genre',
+            style: TextStyle(color: Colors.white),
+          ),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+        ),
+        body: FutureBuilder(
+          future: Future.wait([_moviesFuture, _genresFuture]),
+          builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: Image.asset('assets/clap.gif'));
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else {
+              return Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Center(
+                  child: Container(
+                    constraints: BoxConstraints.expand(),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[900],
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        return Column(
+                          children: [
+                            Expanded(
+                                child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                                  child: AspectRatio(
+                                    aspectRatio: 1.0,
+                                    child:  PieChart(
+                                      PieChartData(
+                                        sections: _genrePopularityMap.entries.map((entry) {
+                                          return PieChartSectionData(
+                                            value: entry.value,
+                                            title: '${entry.key}',
+                                            color: _genreColors[_genrePopularityMap.keys.toList().indexOf(entry.key)],
+                                            showTitle: true,
+                                            titlePositionPercentageOffset: 1.4,
+                                            radius: constraints.maxWidth > constraints.maxHeight
+                                                ? constraints.maxHeight / 8.5 // Adjust based on maxHeight for landscape mode
+                                                : constraints.maxWidth / 8.5, // Adjust based on maxWidth for portrait mode
+                                            titleStyle: TextStyle(
+                                              fontSize: constraints.maxWidth > constraints.maxHeight
+                                                  ? constraints.maxHeight * 0.04 // Adjust font size based on maxHeight for landscape mode
+                                                  : constraints.maxWidth * 0.04, // Adjust font size based on maxWidth for portrait mode
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          );
+                                        }).toList(),
+                                        borderData: FlBorderData(
+                                          show: true,
+                                          border: Border.all(
+                                            color: Colors.white,
+                                            width: 7,
+                                          ),
                                         ),
-                                      );
-                                    }).toList(),
-                                    borderData: FlBorderData(
-                                      show: true, // Afficher les bordures
-                                      border: Border.all(
-                                        color: Colors.white, // Couleur des bordures
-                                        width: 7, // Largeur des bordures
+                                        sectionsSpace: 7,
+                                        centerSpaceRadius: constraints.maxWidth > constraints.maxHeight
+                                            ? constraints.maxHeight / 5 // Adjust based on maxHeight for landscape mode
+                                            : constraints.maxWidth / 5, // Adjust based on maxWidth for portrait mode
+                                        startDegreeOffset: -90,
                                       ),
                                     ),
-                                    sectionsSpace: 7,
-                                    centerSpaceRadius: 110,
-                                    startDegreeOffset: -90,
                                   ),
-                                ),
-                                Positioned(
-                                  bottom: 20, // Ajustez la position verticale selon vos préférences
-                                  left: 0,
-                                  right: 0,
-                                  child: Wrap(
+                            ),
+                            ),
+                               SizedBox(height: 20,),
+                                
+                                  Wrap(
                                     alignment: WrapAlignment.center,
                                     children: _genrePopularityMap.entries.map((entry) {
                                       final title = '${entry.key} (${entry.value.toStringAsFixed(1)}%)';
                                       final color = Colors.primaries[entry.key.length % Colors.primaries.length];
 
                                       return Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
+                                        margin: EdgeInsets.only(bottom: 5),
                                         child: Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
@@ -162,29 +162,24 @@ class _piechartPage2State extends State<piechartPage2> {
                                               color: color,
                                             ),
                                             SizedBox(width: 5),
-                                            Text(title, style: TextStyle(color: Colors.white)),
+                                            Text(title,
+                                                style: TextStyle(color: Colors.white)),
                                           ],
                                         ),
                                       );
                                     }).toList(),
                                   ),
-                                ),
-
-
-                              ],
-
-                            ),
-                          ),
-                        ),
-                      )
-
-                  );
-                }
-              },
-            ),
-
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              );
+            }
+          },
+        ),
       ),
     );
-
   }
 }
