@@ -78,9 +78,11 @@ class _MovieCarouselViewState extends State<MovieCarouselView> {
           },
           child: AnimatedContainer(
             duration: Duration(milliseconds: 200),
-            transform: Matrix4.identity()..scale((hoveredIndex == index) ? 1.1 : 1.0),
+            transform: Matrix4.identity()
+              ..translate(-400.0 * (hoveredIndex == index ? 0.05 : 0.0), -400.0 * (hoveredIndex == index ? 0.05 : 0.0)) // Translate to the center
+              ..scale(1.0 + (hoveredIndex == index ? 0.2 : 0.0)), // Apply scale transformation
             child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 10),
+              padding: EdgeInsets.fromLTRB(20, 20, 20, 40), // Ajout du padding en bas
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(15),
                 child: MouseRegion(
@@ -96,16 +98,18 @@ class _MovieCarouselViewState extends State<MovieCarouselView> {
                   },
                   child: CachedNetworkImage(
                     imageUrl: '${ApiConfig.imageBaseUrl}${movie.posterPath}',
-                    width: 200,
-                    height: 300,
-                    fit: BoxFit.cover,
+                    fit: BoxFit.cover, // Utilisation de BoxFit.cover pour adapter l'image
                     placeholder: (context, url) => Image.asset('assets/clap.gif'),
                     errorWidget: (context, url, error) => Icon(Icons.error),
                   ),
                 ),
               ),
             ),
+
+
           ),
+
+
         );
       },
     );
