@@ -65,51 +65,62 @@ class _MovieCarouselViewState extends State<MovieCarouselView> {
       ),
       itemBuilder: (context, index, realIndex) {
         final movie = widget.movieList[index];
-        return GestureDetector(
-          onTap: () {
-            final random = Random();
-            final randomText = 'Texte aléatoire ${random.nextInt(100)}';
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return MoviePopup(randomText: randomText);
-              },
-            );
-          },
-          child: AnimatedContainer(
-            duration: Duration(milliseconds: 200),
-            transform: Matrix4.identity()
-              ..translate(-400.0 * (hoveredIndex == index ? 0.05 : 0.0), -400.0 * (hoveredIndex == index ? 0.05 : 0.0)) // Translate to the center
-              ..scale(1.0 + (hoveredIndex == index ? 0.2 : 0.0)), // Apply scale transformation
-            child: Container(
-              padding: EdgeInsets.fromLTRB(20, 20, 20, 40), // Ajout du padding en bas
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: MouseRegion(
-                  onEnter: (_) {
-                    setState(() {
-                      hoveredIndex = index;
-                    });
-                  },
-                  onExit: (_) {
-                    setState(() {
-                      hoveredIndex = null;
-                    });
-                  },
-                  child: CachedNetworkImage(
-                    imageUrl: '${ApiConfig.imageBaseUrl}${movie.posterPath}',
-                    fit: BoxFit.cover, // Utilisation de BoxFit.cover pour adapter l'image
-                    placeholder: (context, url) => Image.asset('assets/clap.gif'),
-                    errorWidget: (context, url, error) => Icon(Icons.error),
+        return Draggable<Movie>(
+          data: movie,
+          feedback: Container(
+            width: 100, // Ajustez la taille selon vos besoins
+            height: 150, // Ajustez la taille selon vos besoins
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: CachedNetworkImage(
+                imageUrl: '${ApiConfig.imageBaseUrl}${movie.posterPath}',
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Image.asset('assets/clap.gif'),
+                errorWidget: (context, url, error) => Icon(Icons.error),
+              ),
+            ),
+          ),
+          child: GestureDetector(
+            onTap: () {
+              final random = Random();
+              final randomText = 'Texte aléatoire ${random.nextInt(100)}';
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return MoviePopup(randomText: randomText);
+                },
+              );
+            },
+            child: AnimatedContainer(
+              duration: Duration(milliseconds: 200),
+              transform: Matrix4.identity()
+                ..translate(-400.0 * (hoveredIndex == index ? 0.05 : 0.0), -400.0 * (hoveredIndex == index ? 0.05 : 0.0)),
+              child: Container(
+                padding: EdgeInsets.fromLTRB(20, 20, 20, 40),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: MouseRegion(
+                    onEnter: (_) {
+                      setState(() {
+                        hoveredIndex = index;
+                      });
+                    },
+                    onExit: (_) {
+                      setState(() {
+                        hoveredIndex = null;
+                      });
+                    },
+                    child: CachedNetworkImage(
+                      imageUrl: '${ApiConfig.imageBaseUrl}${movie.posterPath}',
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Image.asset('assets/clap.gif'),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    ),
                   ),
                 ),
               ),
             ),
-
-
           ),
-
-
         );
       },
     );
