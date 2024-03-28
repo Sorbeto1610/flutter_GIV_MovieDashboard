@@ -77,21 +77,43 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
         final selectedMovie = _selectedMovies[columnIndex];
         return selectedMovie != null
             ? Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              selectedMovie.title ?? '', // Display the title of the selected movie
+              selectedMovie.title ?? '', // Afficher le titre du film
               style: TextStyle(fontSize: 16.0),
             ),
             SizedBox(height: 5.0),
+            Text(
+              'Langue: ${selectedMovie.originalLanguage ?? ''}', // Afficher la langue
+              style: TextStyle(fontSize: 14.0),
+            ),
+            Text(
+              'Popularité: ${selectedMovie.popularity}', // Afficher la popularité
+              style: TextStyle(fontSize: 14.0),
+            ),
+            Text(
+              'Date de sortie: ${selectedMovie.releaseDate}', // Afficher la date de sortie
+              style: TextStyle(fontSize: 14.0),
+            ),
+            Text(
+              'Moyenne des votes: ${selectedMovie.voteAverage}', // Afficher la moyenne des votes
+              style: TextStyle(fontSize: 14.0),
+            ),
+            Text(
+              'Nombre de votes: ${selectedMovie.voteCount}', // Afficher le nombre de votes
+              style: TextStyle(fontSize: 14.0),
+            ),
+            SizedBox(height: 5.0),
             Container(
-              height: 100.0, // Adjust size as needed
-              width: 100.0, // Adjust size as needed
+              height: 100.0, // Ajuster la taille si nécessaire
+              width: 100.0, // Ajuster la taille si nécessaire
               child: Stack(
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8.0),
                     child: Image.network(
-                      selectedMovie.posterPath, // Assuming posterPath is a URL
+                      selectedMovie.posterPath, // Supposant que posterPath est une URL
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -113,11 +135,11 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
           ],
         )
             : Container(
-          height: 100.0, // Adjust size as needed
+          height: 100.0, // Ajuster la taille si nécessaire
           color: Colors.grey[200],
           child: Center(
             child: Text(
-              'Drag a movie',
+              'Glissez un film',
               style: TextStyle(fontSize: 16.0),
             ),
           ),
@@ -133,4 +155,5 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
       },
     );
   }
+
 }
