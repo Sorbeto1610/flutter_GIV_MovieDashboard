@@ -15,7 +15,7 @@ class TrendingMoviesHomePageState extends State<TrendingMoviesHomePage> {
   @override
   void initState() {
     super.initState();
-    fetchTrendingMovies(); // Appel de la fonction pour récupérer les films tendance
+    fetchTrendingMovies(); // Appel de la fonction pour récupérer les films tendances
   }
 
   Future<void> fetchTrendingMovies() async {

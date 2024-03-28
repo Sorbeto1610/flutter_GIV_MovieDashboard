@@ -4,6 +4,7 @@ import 'package:giv/trendingMoviesVertical.dart';
 import 'trendingMovies.dart';
 import 'piechartPage.dart';
 import 'graphPage.dart';
+import 'movieComparator.dart';
 
 void main() {
   runApp(
@@ -122,6 +123,11 @@ class _BasicGridWidgetState extends State<BasicGridWidget> {
             Container(
               height: MediaQuery.of(context).size.height / 1.55,
               child: TrendingMoviesHomePage(),
+            ),
+            SizedBox(height: 20),
+            Container(
+              height: MediaQuery.of(context).size.height / 1.55,
+              child: MovieComparisonSelector(),
             ),
             SizedBox(height: 20),
             Container(
