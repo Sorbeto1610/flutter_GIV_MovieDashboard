@@ -125,7 +125,7 @@ class _BasicGridWidgetState extends State<BasicGridWidget> {
             ),
             SizedBox(height: 20),
             Container(
-              height: MediaQuery.of(context).size.height / 1.55,
+              height: MediaQuery.of(context).size.height,
               child: MovieComparisonSelector(),
             ),
             SizedBox(height: 20),
