@@ -1,37 +1,151 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'dart:math';
 import 'movie.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'api-config.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:intl/intl.dart';
 
 class MoviePopup extends StatelessWidget {
-  final String randomText;
+  final Movie movie;
 
-  const MoviePopup({required this.randomText});
+  const MoviePopup({required this.movie});
 
   @override
   Widget build(BuildContext context) {
+    double dialogWidth = MediaQuery.of(context).size.width * 0.7;
+    double dialogHeight = MediaQuery.of(context).size.height * 0.7;
+    double posterHeight = dialogHeight * 0.8;
+    double posterWidth = posterHeight * 2 / 3;
+
     return AlertDialog(
-      title: Text('Titre du film'),
-      content: SingleChildScrollView(
-        child: ListBody(
-          children: <Widget>[
-            Text('Description: $randomText'),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0), // Rounded borders for the dialog box
+      ),
+      contentPadding: EdgeInsets.zero,
+      content: Container(
+        width: dialogWidth,
+        height: dialogHeight,
+        child: Stack(
+          children: [
+            // Background Image
+            Positioned.fill(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(15.0),
+                child: Image.network(
+                  '${ApiConfig.imageBaseUrl}${movie.backdropPath}',
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            // Blur filter
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                child: Container(
+                  color: Colors.black.withOpacity(0.5), // Adjust opacity as needed
+                ),
+              ),
+            ),
+            // Movie Poster
+            Positioned(
+              left: dialogWidth * 0.05,
+              top: (dialogHeight - posterHeight) / 2,
+              child: Container(
+                width: posterWidth,
+                height: posterHeight,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: CachedNetworkImage(
+                    imageUrl: '${ApiConfig.imageBaseUrl}${movie.posterPath}',
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Image.asset('assets/clap.gif'),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                  ),
+                ),
+              ),
+            ),
+            // Text Content
+            Positioned(
+              left: dialogWidth * 0.4,
+              top: dialogHeight * 0.275,
+              child: SizedBox(
+                width: dialogWidth * 0.5,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Movie Title
+                    Text(
+                      movie.title,
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    // Release Date
+                    Text(
+                      'Release Date: ${_formatReleaseDate(movie.releaseDate)}',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    SizedBox(height: 8),
+                    // Vote Average
+                    Text(
+                      'Vote Average:',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    SizedBox(height: 4),
+                    _buildStarRating(movie.voteAverage),
+                    SizedBox(height: 8),
+                    // Overview
+                    Text(
+                      movie.overview,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    SizedBox(height: 8),
+                  ],
+                ),
+              ),
+            ),
+            // Close Button
+            Positioned(
+              top: 10,
+              right: 10,
+              child: IconButton(
+                icon: Icon(Icons.close, color: Colors.white), // Red cross icon
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ),
           ],
         ),
       ),
-      actions: <Widget>[
-        TextButton(
-          child: Text('Fermer'),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+    );
+  }
+
+  // Function to format release date
+  String _formatReleaseDate(String releaseDate) {
+    final parsedDate = DateTime.parse(releaseDate);
+    final formattedDate = DateFormat.yMMMMd('en_US').format(parsedDate);
+    return formattedDate;
+  }
+
+  // Widget to build star rating
+  Widget _buildStarRating(double voteAverage) {
+    int numberOfStars = (voteAverage / 2).round();
+    return Row(
+      children: List.generate(
+        5,
+            (index) => Icon(
+          index < numberOfStars ? Icons.star : Icons.star_border,
+          color: Colors.yellow,
         ),
-      ],
+      ),
     );
   }
 }
+
 
 class MovieCarouselView extends StatefulWidget {
   final List<Movie> movieList;
@@ -82,14 +196,15 @@ class _MovieCarouselViewState extends State<MovieCarouselView> {
           ),
           child: GestureDetector(
             onTap: () {
-              final random = Random();
-              final randomText = 'Texte aléatoire ${random.nextInt(100)}';
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return MoviePopup(randomText: randomText);
+                  return MoviePopup(
+                    movie: movie, // Passer l'objet Movie
+                  );
                 },
               );
+
             },
             child: AnimatedContainer(
               duration: Duration(milliseconds: 200),
