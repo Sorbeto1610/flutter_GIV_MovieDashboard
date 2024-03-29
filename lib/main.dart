@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:giv/piechartHolderPage.dart';
 import 'package:giv/piechartPage2.dart';
 import 'package:giv/trendingMoviesVertical.dart';
 import 'trendingMovies.dart';
@@ -125,21 +126,9 @@ class _BasicGridWidgetState extends State<BasicGridWidget> {
             ),
             SizedBox(height: 20),
             Container(
-              child: Row(
-                children: <Widget>[
-                  Container(
-                    height: MediaQuery.of(context).size.height / 1,
-                    width: MediaQuery.of(context).size.width / 2,
-                    child: PiechartPage(),
-                  ),
-                  SizedBox(height: 20),
-                  Container(
-                    height: MediaQuery.of(context).size.height / 1,
-                    width: MediaQuery.of(context).size.width / 2,
-                    child: PiechartPage2(),
-                  ),
-                ],
-              ),
+              height: MediaQuery.of(context).size.height,
+
+              child: PiechartHolderPage(),
             ),
             SizedBox(height: 20),
             Container(
