@@ -17,9 +17,12 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Text(
-            'Sélectionnez le nombre de films à comparer:',
-            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+          child: const Text(
+            ' Movie Comparator',
+            style: TextStyle(
+              fontSize:  20,
+              color: Colors.white, // Couleur du texte en blanc
+            ),
           ),
         ),
         Row(
@@ -40,11 +43,6 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
           ],
         ),
         SizedBox(height: 20.0),
-        Text(
-          'Films sélectionnés:',
-          style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 10.0),
         Row(
           children: List.generate(
             _selectedCount,
@@ -98,23 +96,23 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
             ),
             SizedBox(height: 5.0),
             Text(
-              'Langue: ${selectedMovie.originalLanguage ?? ''}', // Afficher la langue
+              'Language: ${selectedMovie.originalLanguage ?? ''}', // Afficher la langue
               style: TextStyle(fontSize: 14.0),
             ),
             Text(
-              'Popularité: ${selectedMovie.popularity}', // Afficher la popularité
+              'Popularity: ${selectedMovie.popularity}', // Afficher la popularité
               style: TextStyle(fontSize: 14.0),
             ),
             Text(
-              'Date de sortie: ${selectedMovie.releaseDate}', // Afficher la date de sortie
+              'Release Date: ${selectedMovie.releaseDate}', // Afficher la date de sortie
               style: TextStyle(fontSize: 14.0),
             ),
             Text(
-              'Moyenne des votes: ${selectedMovie.voteAverage}', // Afficher la moyenne des votes
+              'Vote mean: ${selectedMovie.voteAverage}', // Afficher la moyenne des votes
               style: TextStyle(fontSize: 14.0),
             ),
             Text(
-              'Nombre de votes: ${selectedMovie.voteCount}', // Afficher le nombre de votes
+              'Vote number: ${selectedMovie.voteCount}', // Afficher le nombre de votes
               style: TextStyle(fontSize: 14.0),
             ),
             SizedBox(height: 5.0),
@@ -152,7 +150,7 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
           color: Colors.red[600],
           child: Center(
             child: Text(
-              'Glissez un film',
+              '<Drag movie here>',
               style: TextStyle(fontSize: 16.0),
             ),
           ),
