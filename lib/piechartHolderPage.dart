@@ -118,8 +118,7 @@ class _PiechartHolderPageState extends State<PiechartHolderPage> {
                                           ),
                                           SizedBox(width: 5),
                                           Container(
-                                            width: MediaQuery.of(context).size.width *
-                                                0.05, // Modify width as needed
+                                            width: 75, // Modify width as needed
                                             child: Text(
                                               title,
                                               style: TextStyle(

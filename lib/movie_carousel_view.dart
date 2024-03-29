@@ -58,7 +58,7 @@ class _MovieCarouselViewState extends State<MovieCarouselView> {
     return CarouselSlider.builder(
       itemCount: widget.movieList.length,
       options: CarouselOptions(
-        height: 300,
+        height: 400,
         viewportFraction: 1 / numberOfItems.toDouble(),
         enableInfiniteScroll: true,
         autoPlay: true,
@@ -68,8 +68,8 @@ class _MovieCarouselViewState extends State<MovieCarouselView> {
         return Draggable<Movie>(
           data: movie,
           feedback: Container(
-            width: 100, // Ajustez la taille selon vos besoins
-            height: 150, // Ajustez la taille selon vos besoins
+            width: 200, // Ajustez la taille selon vos besoins
+            height: 300, // Ajustez la taille selon vos besoins
             child: ClipRRect(
               borderRadius: BorderRadius.circular(15),
               child: CachedNetworkImage(

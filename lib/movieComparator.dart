@@ -24,9 +24,19 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
         ),
         Row(
           children: [
-            _buildSelectionButton(2), //choisir 2,3, ou 4 films a comparer
-            _buildSelectionButton(3),
-            _buildSelectionButton(4),
+            SizedBox(width: MediaQuery.of(context).size.width/5),
+            Expanded(
+              child: _buildSelectionButton(2), //choisir 2,3, ou 4 films a comparer
+            ),
+            SizedBox(width: MediaQuery.of(context).size.width/5),
+            Expanded(
+              child: _buildSelectionButton(3),
+            ),
+            SizedBox(width: MediaQuery.of(context).size.width/5),
+            Expanded(
+              child: _buildSelectionButton(4),
+            ),
+            SizedBox(width: MediaQuery.of(context).size.width/5),
           ],
         ),
         SizedBox(height: 20.0),
@@ -58,16 +68,19 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
         padding: EdgeInsets.all(10.0), //les boutons ou on clique 2/3 ou 4
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5.0),
-          color: _selectedCount == count ? Colors.blue : Colors.grey[300],
+          color: _selectedCount == count ? Colors.red : Colors.red[300],
         ),
-        child: Text(
-          '$count',
-          style: TextStyle(
-            fontSize: 16.0,
-            color: _selectedCount == count ? Colors.white : Colors.black,
+        child: Center( // Ajout du widget Center
+          child: Text(
+            '$count',
+            style: TextStyle(
+              fontSize: 16.0,
+              color: _selectedCount == count ? Colors.white : Colors.black,
+            ),
           ),
         ),
       ),
+
     );
   }
 
@@ -107,7 +120,7 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
             SizedBox(height: 5.0),
             Container(
               height: 100.0, // Ajuster la taille si nécessaire
-              width: 100.0, // Ajuster la taille si nécessaire
+              width: 150.0, // Ajuster la taille si nécessaire
               child: Stack(
                 children: [
                   ClipRRect(
@@ -136,7 +149,7 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
         )
             : Container(
           height: 100.0, // Ajuster la taille si nécessaire
-          color: Colors.grey[200],
+          color: Colors.red[600],
           child: Center(
             child: Text(
               'Glissez un film',
@@ -145,7 +158,7 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
           ),
         );
       },
-      onWillAccept: (data) {
+      onWillAccept:  (data) {
         return _selectedMovies[columnIndex] == null;
       },
       onAccept: (data) {
