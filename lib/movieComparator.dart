@@ -54,7 +54,6 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
       ],
     );
   }
-
   Widget _buildSelectionButton(int count) {
     return InkWell(
       onTap: () {
@@ -63,12 +62,12 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
         });
       },
       child: Container(
-        padding: EdgeInsets.all(10.0), //les boutons ou on clique 2/3 ou 4
+        padding: EdgeInsets.all(10.0), // Padding for the button
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5.0),
           color: _selectedCount == count ? Colors.red : Colors.red[300],
         ),
-        child: Center( // Ajout du widget Center
+        child: Center(
           child: Text(
             '$count',
             style: TextStyle(
@@ -78,7 +77,6 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
           ),
         ),
       ),
-
     );
   }
 
@@ -87,71 +85,91 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
       builder: (BuildContext context, List<Movie?> candidateData, List<dynamic> rejectedData) {
         final selectedMovie = _selectedMovies[columnIndex];
         return selectedMovie != null
-            ? Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              selectedMovie.title ?? '', // Afficher le titre du film
-              style: TextStyle(fontSize: 16.0),
-            ),
-            SizedBox(height: 5.0),
-            Text(
-              'Language: ${selectedMovie.originalLanguage ?? ''}', // Afficher la langue
-              style: TextStyle(fontSize: 14.0),
-            ),
-            Text(
-              'Popularity: ${selectedMovie.popularity}', // Afficher la popularité
-              style: TextStyle(fontSize: 14.0),
-            ),
-            Text(
-              'Release Date: ${selectedMovie.releaseDate}', // Afficher la date de sortie
-              style: TextStyle(fontSize: 14.0),
-            ),
-            Text(
-              'Vote mean: ${selectedMovie.voteAverage}', // Afficher la moyenne des votes
-              style: TextStyle(fontSize: 14.0),
-            ),
-            Text(
-              'Vote number: ${selectedMovie.voteCount}', // Afficher le nombre de votes
-              style: TextStyle(fontSize: 14.0),
-            ),
-            SizedBox(height: 5.0),
-            Container(
-              height: 100.0, // Ajuster la taille si nécessaire
-              width: 150.0, // Ajuster la taille si nécessaire
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: Image.network(
-                      selectedMovie.posterPath, // Supposant que posterPath est une URL
-                      fit: BoxFit.cover,
-                    ),
+            ? Expanded(
+          child: Container(
+            padding: EdgeInsets.all(10.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  selectedMovie.title ?? '',
+                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 5.0),
+                Text(
+                  'Language: ${selectedMovie.originalLanguage ?? ''}',
+                  style: TextStyle(fontSize: 14.0),
+                ),
+                Text(
+                  'Popularity: ${selectedMovie.popularity}',
+                  style: TextStyle(fontSize: 14.0),
+                ),
+                Text(
+                  'Release Date: ${selectedMovie.releaseDate}',
+                  style: TextStyle(fontSize: 14.0),
+                ),
+                Text(
+                  'Vote mean: ${selectedMovie.voteAverage}',
+                  style: TextStyle(fontSize: 14.0),
+                ),
+                Text(
+                  'Vote number: ${selectedMovie.voteCount}',
+                  style: TextStyle(fontSize: 14.0),
+                ),
+                SizedBox(height: 5.0),
+                Container(
+                  height: 100.0,
+                  width: 150.0,
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: IconButton(
+                          icon: Icon(Icons.close),
+                          onPressed: () {
+                            setState(() {
+                              _selectedMovies[columnIndex] = null;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: IconButton(
-                      icon: Icon(Icons.close),
-                      onPressed: () {
-                        setState(() {
-                          _selectedMovies[columnIndex] = null;
-                        });
-                      },
-                    ),
+                ),
+              ],
+            ),
+          ),
+        )
+            : Container(
+          height: 500, // Adjust the size if necessary
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF91180B),
+                Color(0xFFB9220F),
+                Color(0xFFE32D13),
+                Color(0xFFF85138),
+                Color(0xFFFF6666),
+              ],
+            ),
+          ),
+          child: Center(
+            child: Text(
+              'Drag your movie here',
+              style: TextStyle(
+                fontSize: 20.0,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2,
+                shadows: [
+                  Shadow(
+                    color: Colors.black.withOpacity(0.5),
+                    blurRadius: 2,
+                    offset: Offset(1, 2),
                   ),
                 ],
               ),
-            ),
-          ],
-        )
-            : Container(
-          height: 100.0, // Ajuster la taille si nécessaire
-          color: Colors.red[600],
-          child: Center(
-            child: Text(
-              '<Drag movie here>',
-              style: TextStyle(fontSize: 16.0),
             ),
           ),
         );
@@ -164,6 +182,30 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
           _selectedMovies[columnIndex] = data;
         });
       },
+    );
+  }
+
+
+
+  Widget _buildDetailItem(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(fontSize: 16.0),
+          ),
+        ],
+      ),
     );
   }
 
