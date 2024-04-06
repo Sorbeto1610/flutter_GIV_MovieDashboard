@@ -7,8 +7,173 @@ class MovieComparisonSelector extends StatefulWidget {
 }
 
 class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
-  int _selectedCount = 2; // Nombre de films sélectionnés //le minimum de film a comparer est deux
-  List<Movie?> _selectedMovies = List.filled(4, null); // Liste des films sélectionnés
+  int _selectedCount = 2;
+  List<Movie?> _selectedMovies = List.filled(4, null);
+
+  Widget _buildSelectionButton(int count, String buttonText) {
+    return Expanded(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8.0),
+        child: ElevatedButton(
+          onPressed: () {
+            setState(() {
+              _selectedCount = count;
+            });
+          },
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                  (Set<MaterialState> states) {
+                if (_selectedCount == count) {
+                  return Colors.red[900]!;
+                } else if (states.contains(MaterialState.pressed)) {
+                  return Colors.red[900]!.withOpacity(0.5);
+                }
+                return Colors.red;
+              },
+            ),
+          ),
+          child: Text(
+            buttonText,
+            style: TextStyle(
+              fontSize: 16.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSelectionButtons() {
+    return Container(
+      padding: EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildSelectionButton(2, 'Compare 2 Movies'),
+          _buildSelectionButton(3, 'Compare 3 Movies'),
+          _buildSelectionButton(4, 'Compare 4 Movies'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMovieColumn(int index) {
+    final selectedMovie = _selectedMovies[index];
+    final backgroundColor = _getBackgroundColor(selectedMovie) ?? Colors.red;
+    return Expanded(
+      child: DragTarget<Movie>(
+        builder: (BuildContext context, List<Movie?> candidateData, List<dynamic> rejectedData) {
+          return Container(
+            margin: EdgeInsets.all(10.0),
+            padding: EdgeInsets.all(10.0),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(10.0),
+              color: backgroundColor,
+            ),
+            child: selectedMovie != null
+                ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        if (selectedMovie.posterPath != null) // Vérifie s'il y a un posterUrl
+                          Container(
+                            margin: EdgeInsets.only(right: 8.0),
+                            width: 40.0, // Largeur fixe du poster
+                            height: 60.0, // Hauteur fixe du poster
+                            child: Image.network(
+                              _addHttpsPrefix(selectedMovie.posterPath),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        Text(
+                          selectedMovie.title ?? '',
+                          style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.close, color: Colors.black),
+                      onPressed: () {
+                        setState(() {
+                          _selectedMovies[index] = null;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8.0),
+                _buildHighlightedText('Language:', selectedMovie.originalLanguage ?? ''),
+                _buildHighlightedText('Popularity:', selectedMovie.popularity.toString()),
+                _buildHighlightedText('Release Date:', selectedMovie.releaseDate),
+                _buildHighlightedText('Vote mean:', selectedMovie.voteAverage.toString()),
+                _buildHighlightedText('Vote number:', selectedMovie.voteCount.toString()),
+              ],
+            )
+                : Center(
+              child: Text(
+                'Drag your movie here',
+                style: TextStyle(
+                  fontSize: 20.0,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          );
+        },
+        onWillAccept: (data) => true,
+        onAccept: (data) {
+          setState(() {
+            _selectedMovies[index] = data;
+          });
+        },
+      ),
+    );
+  }
+
+  Color? _getBackgroundColor(Movie? movie) {
+    if (movie == null) return null;
+    double maxPopularity = _selectedMovies.map((e) => e?.popularity ?? double.negativeInfinity).reduce((value, element) => value > element ? value : element);
+    double maxVoteAverage = _selectedMovies.map((e) => e?.voteAverage ?? double.negativeInfinity).reduce((value, element) => value > element ? value : element);
+    if (movie.popularity == maxPopularity) {
+      return Colors.yellow[100]; // Highlight for highest popularity
+    } else if (movie.voteAverage == maxVoteAverage) {
+      return Colors.blue[100]; // Highlight for highest vote average
+    } else {
+      return null;
+    }
+  }
+
+  Widget _buildHighlightedText(String label, String value) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 4.0),
+      child: Text(
+        '$label $value',
+        style: TextStyle(
+          fontSize: 14.0,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+          backgroundColor: Colors.yellow[100],
+        ),
+      ),
+    );
+  }
+
+  String _addHttpsPrefix(String? url) {
+    if (url == null || url.isEmpty) {
+      return "";
+    } else if (url.startsWith("http://") || url.startsWith("https://")) {
+      return url;
+    } else {
+      return "https://$url";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,195 +183,27 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: const Text(
-            ' Movie Comparator',
+            'Movie Comparator',
             style: TextStyle(
-              fontSize:  20,
-              color: Colors.white, // Couleur du texte en blanc
+              fontSize: 20,
+              color: Colors.black,
             ),
           ),
         ),
-        Row(
-          children: [
-            SizedBox(width: MediaQuery.of(context).size.width/5),
-            Expanded(
-              child: _buildSelectionButton(2), //choisir 2,3, ou 4 films a comparer
-            ),
-            SizedBox(width: MediaQuery.of(context).size.width/5),
-            Expanded(
-              child: _buildSelectionButton(3),
-            ),
-            SizedBox(width: MediaQuery.of(context).size.width/5),
-            Expanded(
-              child: _buildSelectionButton(4),
-            ),
-            SizedBox(width: MediaQuery.of(context).size.width/5),
-          ],
-        ),
+        _buildSelectionButtons(),
         SizedBox(height: 20.0),
-        Row(
-          children: List.generate(
-            _selectedCount,
-                (index) => Expanded(
-              child: _buildMovieColumn(index),
+        Expanded(
+          child: GridView.count(
+            crossAxisCount: _selectedCount,
+            crossAxisSpacing: 10.0,
+            mainAxisSpacing: 10.0,
+            children: List.generate(
+              _selectedCount,
+                  (index) => _buildMovieColumn(index),
             ),
           ),
         ),
       ],
     );
   }
-  Widget _buildSelectionButton(int count) {
-    return InkWell(
-      onTap: () {
-        setState(() {
-          _selectedCount = count;
-        });
-      },
-      child: Container(
-        padding: EdgeInsets.all(10.0), // Padding for the button
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5.0),
-          color: _selectedCount == count ? Colors.red : Colors.red[300],
-        ),
-        child: Center(
-          child: Text(
-            '$count',
-            style: TextStyle(
-              fontSize: 16.0,
-              color: _selectedCount == count ? Colors.white : Colors.black,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMovieColumn(int columnIndex) {
-    return DragTarget<Movie>(
-      builder: (BuildContext context, List<Movie?> candidateData, List<dynamic> rejectedData) {
-        final selectedMovie = _selectedMovies[columnIndex];
-        return selectedMovie != null
-            ? Expanded(
-          child: Container(
-            padding: EdgeInsets.all(10.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  selectedMovie.title ?? '',
-                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 5.0),
-                Text(
-                  'Language: ${selectedMovie.originalLanguage ?? ''}',
-                  style: TextStyle(fontSize: 14.0),
-                ),
-                Text(
-                  'Popularity: ${selectedMovie.popularity}',
-                  style: TextStyle(fontSize: 14.0),
-                ),
-                Text(
-                  'Release Date: ${selectedMovie.releaseDate}',
-                  style: TextStyle(fontSize: 14.0),
-                ),
-                Text(
-                  'Vote mean: ${selectedMovie.voteAverage}',
-                  style: TextStyle(fontSize: 14.0),
-                ),
-                Text(
-                  'Vote number: ${selectedMovie.voteCount}',
-                  style: TextStyle(fontSize: 14.0),
-                ),
-                SizedBox(height: 5.0),
-                Container(
-                  height: 100.0,
-                  width: 150.0,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        top: 0,
-                        right: 0,
-                        child: IconButton(
-                          icon: Icon(Icons.close),
-                          onPressed: () {
-                            setState(() {
-                              _selectedMovies[columnIndex] = null;
-                            });
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        )
-            : Container(
-          height: 500, // Adjust the size if necessary
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color(0xFF91180B),
-                Color(0xFFB9220F),
-                Color(0xFFE32D13),
-                Color(0xFFF85138),
-                Color(0xFFFF6666),
-              ],
-            ),
-          ),
-          child: Center(
-            child: Text(
-              'Drag your movie here',
-              style: TextStyle(
-                fontSize: 20.0,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
-                shadows: [
-                  Shadow(
-                    color: Colors.black.withOpacity(0.5),
-                    blurRadius: 2,
-                    offset: Offset(1, 2),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-      onWillAccept:  (data) {
-        return _selectedMovies[columnIndex] == null;
-      },
-      onAccept: (data) {
-        setState(() {
-          _selectedMovies[columnIndex] = data;
-        });
-      },
-    );
-  }
-
-
-
-  Widget _buildDetailItem(String title, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 16.0,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Text(
-            value,
-            style: TextStyle(fontSize: 16.0),
-          ),
-        ],
-      ),
-    );
-  }
-
 }
