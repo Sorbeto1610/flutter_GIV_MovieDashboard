@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:giv/piechartHolderPage.dart';
 import 'package:giv/trendingMoviesVertical.dart';
 import 'trendingMovies.dart';
+import 'genreGraph.dart';
 import 'graphPage.dart';
 import 'movieComparator.dart';
 
@@ -137,7 +138,7 @@ class _BasicGridWidgetState extends State<BasicGridWidget> {
             SizedBox(height: 20),
             Container(
               height: MediaQuery.of(context).size.height,
-              child: graphPage(),
+              child: BarChartSample1(),
             ),
           ],
         )
