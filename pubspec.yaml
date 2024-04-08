@@ -33,6 +33,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+
+  gauge_indicator: ^0.4.3
+
   cached_network_image: ^3.0.0
   http: ^0.13.3
   pie_chart: ^5.4.0
@@ -45,6 +48,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
+  animated_flip_counter: ^0.3.4
 
 dev_dependencies:
   flutter_test:
