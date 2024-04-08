@@ -15,6 +15,7 @@ class _PiechartHolderPageState extends State<PiechartHolderPage> {
   List<Genre> genres = [];
   Map<String, double> _selectedGenresPercentages1 = {};
   Map<String, double> _selectedGenresPercentages2 = {};
+  String _selectedGenreInfo = ""; // Ajout d'une nouvelle variable pour stocker l'info sélectionnée
 
   @override
   void initState() {
@@ -70,30 +71,33 @@ class _PiechartHolderPageState extends State<PiechartHolderPage> {
                             ],
                           ),
                         ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(_selectedGenreInfo, style: TextStyle(color: Colors.white, fontSize: 16)), // Widget pour afficher l'info sélectionnée
+                        ),
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
-
                           child: Row(
                             children: genreCounts.keys.map((genre) {
                               final color = Colors.primaries[genres.indexWhere((g) => g.name == genre) % Colors.primaries.length];
                               return Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                              child: GestureDetector(
-                              onTap: () {
-                              final selectedPercentage1 = _selectedGenresPercentages1[genre];
-                              final percentageString1 = selectedPercentage1 != null ? "${NumberFormat("0.00").format(selectedPercentage1)}%" : "N/A";
-                              final selectedPercentage2 = _selectedGenresPercentages2[genre];
-                              final percentageString2 = selectedPercentage2 != null ? "${NumberFormat("0.00").format(selectedPercentage2)}%" : "N/A";
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text('$genre: Chart 1: $percentageString1, Chart 2: $percentageString2'),
-                              duration: Duration(seconds: 4),
-                              ));
-                              },
-                                child: Chip(
-                                  label: Text(genre),
-                                  backgroundColor: color,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    final selectedPercentage1 = _selectedGenresPercentages1[genre];
+                                    final percentageString1 = selectedPercentage1 != null ? "${NumberFormat("0.00").format(selectedPercentage1)}%" : "N/A";
+                                    final selectedPercentage2 = _selectedGenresPercentages2[genre];
+                                    final percentageString2 = selectedPercentage2 != null ? "${NumberFormat("0.00").format(selectedPercentage2)}%" : "N/A";
+                                    setState(() {
+                                      _selectedGenreInfo = '$genre: Chart 1: $percentageString1, Chart 2: $percentageString2'; // Mettre à jour l'info sélectionnée
+                                    });
+                                  },
+                                  child: Chip(
+                                    label: Text(genre),
+                                    backgroundColor: color,
+                                  ),
                                 ),
-                              ),);
+                              );
                             }).toList(),
                           ),
                         ),

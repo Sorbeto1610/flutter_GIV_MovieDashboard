@@ -41,6 +41,8 @@ class _PiechartPageState extends State<PiechartPage> {
           final Map<String, int> genreCounts = countingGenreDictionary(movies, genres);
           final Map<String, double> genrePercentages = calculateGenrePercentages(genreCounts);
 
+          genres.sort((a, b) => a.name.compareTo(b.name)); // S'assurer que l'ordre des genres est cohérent
+
           bool hasDataChanged = _lastGenrePercentages.toString() != genrePercentages.toString();
           if (hasDataChanged) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -49,12 +51,13 @@ class _PiechartPageState extends State<PiechartPage> {
             _lastGenrePercentages = Map.from(genrePercentages);
           }
 
-          final List<PieChartSectionData> sections = genrePercentages.entries.map((entry) {
-            final colorIndex = genres.indexWhere((genre) => genre.name == entry.key) % Colors.primaries.length;
+          final List<PieChartSectionData> sections = genres.map((Genre genre) {
+            final percentage = genrePercentages[genre.name] ?? 0;
+            final colorIndex = genres.indexOf(genre) % Colors.primaries.length;
             return PieChartSectionData(
               color: Colors.primaries[colorIndex],
-              value: entry.value,
-              title: entry.key, // Modification ici pour afficher seulement le nom du genre
+              value: percentage,
+              title: genre.name,
               titleStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
               radius: 100,
             );
@@ -69,6 +72,7 @@ class _PiechartPageState extends State<PiechartPage> {
               ),
               child: PieChart(
                 PieChartData(
+                  startDegreeOffset: -90, // Les sections du PieChart sont tournées de -90 degrés
                   sections: sections,
                   borderData: FlBorderData(show: false),
                   sectionsSpace: 2,
