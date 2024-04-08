@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:giv/piechartPage.dart';
-import 'package:giv/piechartPage2.dart';
-import 'movie.dart';
+import 'package:intl/intl.dart';
 import 'fetchService.dart';
-import 'countingGenres.dart';
 import 'genre.dart';
+import 'piechartPage.dart';
+import 'piechartPage2.dart';
 
 class PiechartHolderPage extends StatefulWidget {
   @override
@@ -12,139 +11,102 @@ class PiechartHolderPage extends StatefulWidget {
 }
 
 class _PiechartHolderPageState extends State<PiechartHolderPage> {
-  late Future<List<Movie>> _moviesFuture;
   late Future<List<Genre>> _genresFuture;
+  List<Genre> genres = [];
+  Map<String, double> _selectedGenresPercentages1 = {};
+  Map<String, double> _selectedGenresPercentages2 = {};
 
   @override
   void initState() {
     super.initState();
-    _moviesFuture = FetchService.fetchMoviesTrend();
-    _genresFuture = FetchService.fetchMoviesListGenre();
+    _genresFuture = FetchService.fetchMoviesListGenre().then((value) {
+      genres = value;
+      return value;
+    });
   }
 
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: FutureBuilder(
-          future: Future.wait([_moviesFuture, _genresFuture]),
-          builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: Image.asset('assets/clap.gif'));
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Erreur: ${snapshot.error}'));
-            } else {
-              final List<Movie> movies = snapshot.data![0] as List<Movie>;
-              final List<Genre> genres = snapshot.data![1] as List<Genre>;
-
-              final Map<String, int> genreCounts =
-              countingGenreDictionary(movies, genres);
-              final Map<String, double> genrePercentages =
-              calculateGenrePercentages(genreCounts);
-
-              // Trier les sections du pie chart par ordre alphabétique des genres
-              final sortedGenreCounts = genreCounts.entries.toList()
-                ..sort((a, b) => a.key.compareTo(b.key));
-
-              // Créer une liste de couleurs primaires triées par ordre alphabétique des genres
-              final sortedPrimaryColors = sortedGenreCounts.map((entry) {
-                final genreIndex =
-                genres.indexWhere((genre) => genre.name == entry.key);
-                final colorIndex = genreIndex % Colors.primaries.length;
-                return Colors.primaries[colorIndex];
-              }).toList();
-
-              return Center(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[800],
-                    borderRadius: BorderRadius.circular(20.0), // Coins arrondis
-                  ),
-                  child: Column(
-                    children: [
-                      Container(
-                        child: Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Container(
-                                height: MediaQuery.of(context).size.height * 0.8,
-                                child: PiechartPage(),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Genre Popularity"),
+      ),
+      body: FutureBuilder<List<Genre>>(
+        future: _genresFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          } else if (snapshot.hasData) {
+            final genreCounts = Map.fromIterable(snapshot.data!, key: (item) => item.name, value: (item) => 0);
+            return Column(
+              children: [
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[800],
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: PiechartPage(onGenreSelected1: (Map<String, double> percentages) {
+                                  setState(() {
+                                    _selectedGenresPercentages1 = percentages;
+                                  });
+                                }),
                               ),
-                            ),
-                            Expanded(
-                              child: Container(
-                                height: MediaQuery.of(context).size.height * 0.8,
-                                child: PiechartPage2(),
+                              Expanded(
+                                child: PiechartPage2(onGenreSelected: (Map<String, double> percentages) {
+                                  setState(() {
+                                    _selectedGenresPercentages2 = percentages;
+                                  });
+                                }),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 20), // Ajuster l'espacement si nécessaire
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.975,
-                        height: MediaQuery.of(context).size.height * 0.15,
-                        padding: EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[900],
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                        child: Center(
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Wrap(
-                              alignment: WrapAlignment.center, // Center the content horizontally
-                              spacing: 5,
-                              runSpacing: 5,
-                              children: sortedGenreCounts.map((entry) {
-                                final title = '${entry.key}';
-                                final color =
-                                sortedPrimaryColors[sortedGenreCounts.indexOf(entry)];
-
-                                return Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 5),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.center, // Horizontally center the row content
-                                        crossAxisAlignment: CrossAxisAlignment.center, // Vertically center the row content
-                                        children: [
-                                          Container(
-                                            width: 20,
-                                            height: 20,
-                                            color: color,
-                                            child: Icon(Icons.add),
-                                          ),
-                                          SizedBox(width: 5),
-                                          Container(
-                                            width: 75, // Modify width as needed
-                                            child: Text(
-                                              title,
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }).toList(),
-                            ),
+                            ],
                           ),
                         ),
-                      ),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
 
-                    ],
+                          child: Row(
+                            children: genreCounts.keys.map((genre) {
+                              final color = Colors.primaries[genres.indexWhere((g) => g.name == genre) % Colors.primaries.length];
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: GestureDetector(
+                              onTap: () {
+                              final selectedPercentage1 = _selectedGenresPercentages1[genre];
+                              final percentageString1 = selectedPercentage1 != null ? "${NumberFormat("0.00").format(selectedPercentage1)}%" : "N/A";
+                              final selectedPercentage2 = _selectedGenresPercentages2[genre];
+                              final percentageString2 = selectedPercentage2 != null ? "${NumberFormat("0.00").format(selectedPercentage2)}%" : "N/A";
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text('$genre: Chart 1: $percentageString1, Chart 2: $percentageString2'),
+                              duration: Duration(seconds: 4),
+                              ));
+                              },
+                                child: Chip(
+                                  label: Text(genre),
+                                  backgroundColor: color,
+                                ),
+                              ),);
+                            }).toList(),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              );
-            }
-          },
-        ),
+              ],
+            );
+          } else {
+            return Center(child: Text("No data"));
+          }
+        },
       ),
     );
   }
