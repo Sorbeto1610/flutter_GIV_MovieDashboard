@@ -16,6 +16,7 @@ class PiechartPage2 extends StatefulWidget {
 class _PiechartPage2State extends State<PiechartPage2> {
   late Future<List<Movie>> _moviesFuture;
   late Future<List<Genre>> _genresFuture;
+  late List<Genre> genres; // Déclaration de la liste des genres
   late Map<String, double> _genrePopularityMap = {};
 
   @override
@@ -28,7 +29,7 @@ class _PiechartPage2State extends State<PiechartPage2> {
 
   Future<void> _loadData() async {
     final List<Movie> movies = await _moviesFuture;
-    final List<Genre> genres = await _genresFuture;
+    genres = await _genresFuture; // Chargement de la liste des genres
     double totalPopularity = movies.fold(0, (acc, movie) => acc + movie.popularity);
     Map<String, double> genrePopularityMap = {};
     for (var genre in genres) {
@@ -62,7 +63,8 @@ class _PiechartPage2State extends State<PiechartPage2> {
   }
 
   Color getGenreColor(String genreName) {
-    return Colors.primaries[genreName.length % Colors.primaries.length];
+    int index = genres.indexWhere((genre) => genre.name == genreName);
+    return Colors.primaries[index % Colors.primaries.length];
   }
 
   @override
@@ -77,11 +79,12 @@ class _PiechartPage2State extends State<PiechartPage2> {
         ),
         child: PieChart(
           PieChartData(
+            startDegreeOffset: -90, // Appliquer la rotation ici
             sections: _genrePopularityMap.entries.map((entry) {
               return PieChartSectionData(
                 color: getGenreColor(entry.key),
                 value: entry.value,
-                title: entry.key, // Modification ici
+                title: entry.key,
                 titleStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
                 radius: 100,
               );
