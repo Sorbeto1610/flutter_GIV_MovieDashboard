@@ -2,18 +2,14 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:charts_flutter/flutter.dart' as charts;
-
-import 'comparePopularity.dart';
 import 'fetchService.dart';
 import 'genre.dart';
 import 'movie.dart';
 
 class BarChartSample1 extends StatefulWidget {
-  BarChartSample1({super.key});
+  BarChartSample1({Key? key}) : super(key: key);
 
   List<Color> get availableColors => const <Color>[
     Colors.purple,
@@ -24,8 +20,7 @@ class BarChartSample1 extends StatefulWidget {
     Colors.red,
   ];
 
-  final Color barBackgroundColor =
-  Colors.white.withOpacity(0.3);
+  final Color barBackgroundColor = Colors.white.withOpacity(0.3);
   final Color barColor = Colors.white;
   final Color touchedBarColor = Colors.red;
 
@@ -34,17 +29,17 @@ class BarChartSample1 extends StatefulWidget {
 }
 
 class BarChartSample1State extends State<BarChartSample1> {
-
   late Future<List<Movie>> _moviesFuture;
   late Future<List<Genre>> _genresFuture;
   List<Genre>? _genresList;
   Genre? _selectedGenre; // Genre sélectionné
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _moviesFuture = FetchService.fetchMoviesTrend();
     _genresFuture = FetchService.fetchMoviesListGenre();
+    _moviesFuture = FetchService.fetchMoviesTrend();
     _selectedGenre = null; // Initialiser le genre sélectionné à null
   }
 
@@ -53,7 +48,6 @@ class BarChartSample1State extends State<BarChartSample1> {
   int touchedIndex = -1;
 
   bool isPlaying = false;
-
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +60,7 @@ class BarChartSample1State extends State<BarChartSample1> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 const Text(
-                  'Mingguan',
+                  'Movie Popularity Chart',
                   style: TextStyle(
                     color: Colors.red,
                     fontSize: 24,
@@ -76,8 +70,8 @@ class BarChartSample1State extends State<BarChartSample1> {
                 const SizedBox(
                   height: 4,
                 ),
-                Text(
-                  'Grafik konsumsi kalori',
+                const Text(
+                  'Sorted by genre',
                   style: TextStyle(
                     color: Colors.red,
                     fontSize: 18,
@@ -85,7 +79,7 @@ class BarChartSample1State extends State<BarChartSample1> {
                   ),
                 ),
                 const SizedBox(
-                  height: 38,
+                  height: 30,
                 ),
                 Expanded(
                   child: Column(
@@ -94,16 +88,20 @@ class BarChartSample1State extends State<BarChartSample1> {
                       _buildGenreDropdown(),
                       Expanded(
                         child: Center(
-                          child: FutureBuilder<List<Genre>>(
+                          child: _isLoading
+                              ? Image.asset('assets/clap.gif')
+                              : FutureBuilder<List<Genre>>(
                             future: _genresFuture,
                             builder: (context, snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return CircularProgressIndicator();
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Image.asset('assets/clap.gif');
                               } else if (snapshot.hasError) {
-                                return Text('Error: ${snapshot.error}');
+                                return Text(
+                                    'Error: ${snapshot.error}');
                               } else {
                                 _genresList = snapshot.data!;
-                                return  _buildBody();
+                                return _buildBody();
                               }
                             },
                           ),
@@ -112,8 +110,8 @@ class BarChartSample1State extends State<BarChartSample1> {
                     ],
                   ),
                 ),
-                  const SizedBox(
-                  height: 12,
+                const SizedBox(
+                  height: 58,
                 ),
               ],
             ),
@@ -123,6 +121,7 @@ class BarChartSample1State extends State<BarChartSample1> {
             child: Align(
               alignment: Alignment.topRight,
               child: IconButton(
+                iconSize: 60,
                 icon: Icon(
                   isPlaying ? Icons.pause : Icons.play_arrow,
                   color: Colors.red,
@@ -148,13 +147,13 @@ class BarChartSample1State extends State<BarChartSample1> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         Expanded(
           child: FutureBuilder<List<Movie>>(
             future: _moviesFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
+                return Image.asset('assets/clap.gif');
               } else if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
               } else {
@@ -163,60 +162,79 @@ class BarChartSample1State extends State<BarChartSample1> {
             },
           ),
         ),
+        const SizedBox(height: 20),
       ],
     );
   }
+
   Widget _buildGenreDropdown() {
-    return DropdownButtonFormField<Genre>(
-      value: _selectedGenre,
-      onChanged: (Genre? newValue) {
-        setState(() {
-          _selectedGenre = newValue;
-        });
-      },
-      items: [
-        DropdownMenuItem<Genre>(
-          value: null,
-          child: Text('All'),
-        ),
-        ...?_genresList?.map<DropdownMenuItem<Genre>>((Genre genre) {
-          return DropdownMenuItem<Genre>(
-            value: genre,
-            child: Text(genre.name),
+    return FutureBuilder<List<Genre>>(
+      future: _genresFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Image.asset('assets/clap.gif'); // Afficher une indication de chargement
+        } else if (snapshot.hasError) {
+          return Image.asset('assets/clap.gif');
+        } else {
+          // Construire la liste déroulante une fois que la liste des genres est récupérée
+          _genresList = snapshot.data;
+          return DropdownButtonFormField<Genre>(
+            value: _selectedGenre,
+            onChanged: (Genre? newValue) {
+              setState(() {
+                _selectedGenre = newValue;
+                _isLoading = true;
+                _moviesFuture = FetchService.fetchMoviesTrend();
+                _isLoading = false;
+              });
+            },
+            items: [
+              const DropdownMenuItem<Genre>(
+                value: null,
+                child: Text('All'),
+              ),
+              if (_genresList != null)
+                ..._genresList!.map<DropdownMenuItem<Genre>>((Genre genre) {
+                  return DropdownMenuItem<Genre>(
+                    value: genre,
+                    child: Text(genre.name),
+                  );
+                }),
+            ],
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.black,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: const BorderSide(color: Colors.red),
+              ),
+              hintText: 'Select a genre',
+            ),
           );
-        }).toList(),
-      ],
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: Colors.black,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        hintText: 'Select a genre', // Texte d'invite pour indiquer qu'on peut cliquer
-      ),
+        }
+      },
     );
   }
+
 
   Widget _buildGraph(List<Movie> movies) {
-    // Filtrer les films par genre sélectionné
     final List<Movie> filteredMovies = _selectedGenre != null
-        ? movies.where((movie) => movie.genreIds.contains(_selectedGenre!.id)).toList()
-        : List.from(movies); // Copie la liste complète de films si aucun genre n'est sélectionné
+        ? movies
+        .where((movie) => movie.genreIds.contains(_selectedGenre!.id))
+        .toList()
+        : List.from(movies);
 
-    // Si la liste de films filtrée est vide, afficher un message avec un GIF
     if (filteredMovies.isEmpty) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Adjust width and height of the Image.asset widget to make it smaller
           Image.asset(
             'assets/clap.gif',
-            width: 100, // Adjust width as needed
-            height: 100, // Adjust height as needed
+            width: 100,
+            height: 100,
           ),
-          SizedBox(height: 20),
-          // Set the style of the Text widget to make the text white
-          Text(
+          const SizedBox(height: 20),
+          const Text(
             'Movie in the making...',
             style: TextStyle(
               color: Colors.white,
@@ -225,39 +243,32 @@ class BarChartSample1State extends State<BarChartSample1> {
         ],
       );
     }
-    // Tri de la liste de films filtrée par popularité (du moins populaire au plus populaire)
-    //filteredMovies.sort((a, b) => a.popularity.compareTo(b.popularity));
-
-    // Appel de comparePopularityList avec la liste de films triée par popularité
-    final List<charts.Series<Movie, String>> seriesList =
-    comparePopularityList(filteredMovies); // Inverser la liste pour afficher du moins populaire au plus populaire
 
     return BarChart(
-      isPlaying ? randomData() : mainBarData(filteredMovies),
-      swapAnimationDuration: animDuration,);
+      isPlaying ? randomData(filteredMovies) : mainBarData(filteredMovies),
+      swapAnimationDuration: animDuration,
+    );
   }
 
   BarChartGroupData makeGroupData(
-      int x,
-      double y, {
-        bool isTouched = false,
+      List<Movie> filteredMovies, int x, double y,
+      {bool isTouched = false,
         Color? barColor,
-        List<int> showTooltips = const [],
-      }) {
+        List<int> showTooltips = const []}) {
     barColor ??= widget.barColor;
     return BarChartGroupData(
       x: x,
       barRods: [
         BarChartRodData(
-          toY: isTouched ? y*1.02 : y,
+          toY: isTouched ? y + 150 : y,
           color: isTouched ? widget.touchedBarColor : barColor,
-          width: MediaQuery.of(context).size.width/(7+5),
+          width: 30,
           borderSide: isTouched
               ? BorderSide(color: widget.touchedBarColor)
               : const BorderSide(color: Colors.white, width: 0),
           backDrawRodData: BackgroundBarChartRodData(
             show: true,
-            toY: 3700,
+            toY: 4100,
             color: widget.barBackgroundColor,
           ),
         ),
@@ -271,51 +282,26 @@ class BarChartSample1State extends State<BarChartSample1> {
 
     for (int i = 0; i < filteredMovies.length; i++) {
       Movie movie = filteredMovies[i];
-      double y = movie.popularity.toDouble(); // Assuming popularity is a double value in Movie class
+      double y = movie.popularity.toDouble();
 
-      groups.add(makeGroupData(i, y, isTouched: i == touchedIndex));
+      groups.add(makeGroupData(filteredMovies, i, y,
+          isTouched: i == touchedIndex));
     }
 
     return groups;
   }
 
-
   BarChartData mainBarData(List<Movie> filteredMovies) {
     return BarChartData(
       barTouchData: BarTouchData(
         touchTooltipData: BarTouchTooltipData(
-          tooltipBgColor: Colors.blueGrey,
+          tooltipBgColor: Colors.red[200],
           tooltipHorizontalAlignment: FLHorizontalAlignment.right,
           tooltipMargin: -10,
           getTooltipItem: (group, groupIndex, rod, rodIndex) {
-            String weekDay;
-            switch (group.x) {
-              case 0:
-                weekDay = 'Monday';
-                break;
-              case 1:
-                weekDay = 'Tuesday';
-                break;
-              case 2:
-                weekDay = 'Wednesday';
-                break;
-              case 3:
-                weekDay = 'Thursday';
-                break;
-              case 4:
-                weekDay = 'Friday';
-                break;
-              case 5:
-                weekDay = 'Saturday';
-                break;
-              case 6:
-                weekDay = 'Sunday';
-                break;
-              default:
-                throw Error();
-            }
+            String movieName = filteredMovies[group.x].title;
             return BarTooltipItem(
-              '$weekDay\n',
+              '$movieName\n',
               const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -325,7 +311,7 @@ class BarChartSample1State extends State<BarChartSample1> {
                 TextSpan(
                   text: (rod.toY - 1).toString(),
                   style: const TextStyle(
-                    color: Colors.white, //widget.touchedBarColor,
+                    color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
@@ -357,7 +343,9 @@ class BarChartSample1State extends State<BarChartSample1> {
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
-            getTitlesWidget: getTitles,
+            getTitlesWidget: (value, meta) {
+              return getTitles(value, filteredMovies);
+            },
             reservedSize: 38,
           ),
         ),
@@ -375,47 +363,40 @@ class BarChartSample1State extends State<BarChartSample1> {
     );
   }
 
-  Widget getTitles(double value, TitleMeta meta) {
+  Widget getTitles(double value, List<Movie> filteredMovies) {
     const style = TextStyle(
       color: Colors.white,
       fontWeight: FontWeight.bold,
       fontSize: 14,
     );
-    Widget text;
-    switch (value.toInt()) {
-      case 0:
-        text = const Text('M', style: style);
-        break;
-      case 1:
-        text = const Text('T', style: style);
-        break;
-      case 2:
-        text = const Text('W', style: style);
-        break;
-      case 3:
-        text = const Text('T', style: style);
-        break;
-      case 4:
-        text = const Text('F', style: style);
-        break;
-      case 5:
-        text = const Text('S', style: style);
-        break;
-      case 6:
-        text = const Text('S', style: style);
-        break;
-      default:
-        text = const Text('', style: style);
-        break;
+
+    String movieName = '';
+    if (value.toInt() >= 0 && value.toInt() < filteredMovies.length) {
+      movieName = filteredMovies[value.toInt()].title;
     }
-    return SideTitleWidget(
-      axisSide: meta.axisSide,
-      space: 16,
-      child: text,
+
+    return Transform.rotate(
+      angle: -28 * (pi / 180),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final textWidth = TextPainter(
+            text: TextSpan(text: movieName, style: style),
+            textDirection: TextDirection.ltr,
+          )..layout(maxWidth: constraints.maxWidth);
+
+          final horizontalOffset = -(textWidth.width / 2.2);
+          final verticalOffset = sin(0 * pi / 180);
+
+          return Transform.translate(
+            offset: Offset(horizontalOffset, verticalOffset),
+            child: Text(movieName, style: style),
+          );
+        },
+      ),
     );
   }
 
-  BarChartData randomData() {
+  BarChartData randomData(List<Movie> filteredMovies) {
     return BarChartData(
       barTouchData: BarTouchData(
         enabled: false,
@@ -425,7 +406,9 @@ class BarChartSample1State extends State<BarChartSample1> {
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
-            getTitlesWidget: getTitles,
+            getTitlesWidget: (value, meta) {
+              return getTitles(value, filteredMovies);
+            },
             reservedSize: 38,
           ),
         ),
@@ -448,61 +431,16 @@ class BarChartSample1State extends State<BarChartSample1> {
       borderData: FlBorderData(
         show: false,
       ),
-      barGroups: List.generate(7, (i) {
-        switch (i) {
-          case 0:
-            return makeGroupData(
-              0,
-              Random().nextInt(15).toDouble() + 6,
-              barColor: widget.availableColors[
-              Random().nextInt(widget.availableColors.length)],
-            );
-          case 1:
-            return makeGroupData(
-              1,
-              Random().nextInt(15).toDouble() + 6,
-              barColor: widget.availableColors[
-              Random().nextInt(widget.availableColors.length)],
-            );
-          case 2:
-            return makeGroupData(
-              2,
-              Random().nextInt(15).toDouble() + 6,
-              barColor: widget.availableColors[
-              Random().nextInt(widget.availableColors.length)],
-            );
-          case 3:
-            return makeGroupData(
-              3,
-              Random().nextInt(15).toDouble() + 6,
-              barColor: widget.availableColors[
-              Random().nextInt(widget.availableColors.length)],
-            );
-          case 4:
-            return makeGroupData(
-              4,
-              Random().nextInt(15).toDouble() + 6,
-              barColor: widget.availableColors[
-              Random().nextInt(widget.availableColors.length)],
-            );
-          case 5:
-            return makeGroupData(
-              5,
-              Random().nextInt(15).toDouble() + 6,
-              barColor: widget.availableColors[
-              Random().nextInt(widget.availableColors.length)],
-            );
-          case 6:
-            return makeGroupData(
-              6,
-              Random().nextInt(15).toDouble() + 6,
-              barColor: widget.availableColors[
-              Random().nextInt(widget.availableColors.length)],
-            );
-          default:
-            return throw Error();
-        }
+      barGroups: List.generate(filteredMovies.length, (i) {
+        return makeGroupData(
+          filteredMovies,
+          i,
+          Random().nextInt(3510).toDouble() + 600,
+          barColor: widget.availableColors[
+          Random().nextInt(widget.availableColors.length)],
+        );
       }),
+
       gridData: const FlGridData(show: false),
     );
   }
@@ -517,4 +455,3 @@ class BarChartSample1State extends State<BarChartSample1> {
     }
   }
 }
-
