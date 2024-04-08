@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:giv/ResponsiveText.dart';
 import 'movie_carousel_view.dart';
 import 'movie.dart';
 import 'movie_list.dart';
@@ -63,12 +64,13 @@ class TrendingMoviesHomePageState extends State<TrendingMoviesHomePage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent, // Rendre la barre d'app bar transparente
         elevation: 0, // Supprimer l'ombre de l'app bar
-        title: const Text(
-          'Trending Movies',
-          style: TextStyle(
-            color: Colors.white, // Couleur du texte en blanc
-          ),
-        ),
+        title: ResponsiveText(
+          text: "Trending Movies from this week",
+          fontSize: 20.0,
+          textColor: Colors.white,
+          shadowColor: Colors.red,
+          shadowOffset: Offset(0.0, 0.0),
+        )
       ),
     );
   }
