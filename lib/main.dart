@@ -3,7 +3,6 @@ import 'package:giv/piechartHolderPage.dart';
 import 'package:giv/trendingMoviesVertical.dart';
 import 'trendingMovies.dart';
 import 'genreGraph.dart';
-import 'graphPage.dart';
 import 'movieComparator.dart';
 
 void main() {
@@ -112,12 +111,14 @@ class _BasicGridWidgetState extends State<BasicGridWidget> {
                 ),
             ),
             SizedBox(height: 20),
-            ResponsiveText(
+            ResponsiveTitle(
               text: "The Movie Database",
-              fontSize: 24.0,
+              fontSize: 50.0,
               textColor: Colors.white,
-              shadowColor: Colors.grey,
-              shadowOffset: Offset(2.0, 2.0),
+              shadowColor1: Colors.red,
+              shadowOffset1: Offset(2.0, 2.0),
+              shadowColor2: Colors.redAccent,
+              shadowOffset2: Offset(1.0, 1.0),
             ),
             SizedBox(height: 20),
             Container(
@@ -148,25 +149,31 @@ class _BasicGridWidgetState extends State<BasicGridWidget> {
   }
 }
 
-class ResponsiveText extends StatelessWidget {
+class ResponsiveTitle extends StatelessWidget {
   final String text;
   final double fontSize;
   final Color textColor;
-  final Color shadowColor;
-  final Offset shadowOffset;
+  final Color shadowColor1;
+  final Color shadowColor2;
+  final Offset shadowOffset1;
+  final Offset shadowOffset2;
 
-  ResponsiveText({
+  ResponsiveTitle({
     required this.text,
     required this.fontSize,
     required this.textColor,
-    required this.shadowColor,
-    required this.shadowOffset,
+    required this.shadowColor1,
+    required this.shadowColor2,
+    required this.shadowOffset1,
+    required this.shadowOffset2,
   });
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double responsiveFontSize = screenWidth * fontSize / 400.0;
+    double responsiveFontSize = screenWidth * fontSize / 1000.0;
+    Offset responsiveShadowOffset1 = shadowOffset1*responsiveFontSize/20;
+    Offset responsiveShadowOffset2 = shadowOffset2*responsiveFontSize/20;
 
     return Text(
       text,
@@ -177,8 +184,12 @@ class ResponsiveText extends StatelessWidget {
         fontWeight: FontWeight.bold,
         shadows: [
           Shadow(
-            color: shadowColor,
-            offset: shadowOffset,
+            color: shadowColor1,
+            offset: responsiveShadowOffset1,
+          ),
+          Shadow(
+            color: shadowColor2,
+            offset: responsiveShadowOffset2,
           ),
         ],
       ),

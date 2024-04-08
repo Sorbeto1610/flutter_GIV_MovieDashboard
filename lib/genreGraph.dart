@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:math';
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-
+import 'ResponsiveText.dart';
 import 'fetchService.dart';
 import 'genre.dart';
+import 'main.dart';
 import 'movie.dart';
 
 class BarChartSample1 extends StatefulWidget {
@@ -34,6 +34,7 @@ class BarChartSample1State extends State<BarChartSample1> {
   List<Genre>? _genresList;
   Genre? _selectedGenre; // Genre sélectionné
   bool _isLoading = false;
+  bool _showContainer = true;
 
   @override
   void initState() {
@@ -49,6 +50,27 @@ class BarChartSample1State extends State<BarChartSample1> {
 
   bool isPlaying = false;
 
+  void _handleGenreChange(Genre? newValue) {
+    setState(() {
+      _selectedGenre = newValue;
+      _isLoading = true;
+      _moviesFuture = FetchService.fetchMoviesTrend();
+      _isLoading = false;
+    });
+    // Activer temporairement le bouton play/pause pendant 3 secondes
+    setState(() {
+      isPlaying = true;
+      if (isPlaying) {
+        refreshState();
+      }
+    });
+    Timer(Duration(seconds: 2), () {
+      setState(() {
+        isPlaying = false;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,27 +81,30 @@ class BarChartSample1State extends State<BarChartSample1> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                const Text(
-                  'Movie Popularity Chart',
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                const SizedBox(
+                  height: 10,
+                ),
+                Center(
+                    child: ResponsiveText(
+                      text: "Trending Movies from this week",
+                      fontSize: 20.0,
+                      textColor: Colors.white,
+                      shadowColor: Colors.red,
+                      shadowOffset: Offset(0.0, 0.0),
+                    ),
                   ),
+                const SizedBox(
+                  height: 38,
+                ),
+                ResponsiveText(
+                  text: "Select genre :",
+                  fontSize: 12.0,
+                  textColor: Colors.white,
+                  shadowColor: Colors.red,
+                  shadowOffset: Offset(0.0, 0.0),
                 ),
                 const SizedBox(
-                  height: 4,
-                ),
-                const Text(
-                  'Sorted by genre',
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(
-                  height: 30,
+                  height: 15,
                 ),
                 Expanded(
                   child: Column(
@@ -136,7 +161,73 @@ class BarChartSample1State extends State<BarChartSample1> {
                 },
               ),
             ),
+          ),
+          _showContainer
+              ? Positioned(
+            top: 110,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: MediaQuery.of(context)
+                  .size
+                  .height - 110, // Hauteur ajustable
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xFF91180B),
+                    Color(0xFFB9220F),
+                    Color(0xFFE32D13),
+                    Color(0xFFF85138),
+                    Color(0xFFFF6666),
+                  ],
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/clap.gif',
+                    width: 600,
+                    height: 400,
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _showContainer = false;
+                        isPlaying = true;
+                        if (isPlaying) {
+                          refreshState();
+                        }
+                      });
+                      Timer(Duration(seconds: 3), () {
+                        setState(() {
+                          isPlaying = false;
+                        });
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white60, // Background color
+                      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32), // Button padding
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10), // Button border radius
+                      ),
+                    ),
+                    child: ResponsiveTitle(
+                      text: "Click here !",
+                      fontSize: 17.5,
+                      textColor: Colors.white,
+                      shadowColor1: Colors.red,
+                      shadowOffset1: Offset(1.5, 1.5),
+                      shadowColor2: Colors.redAccent,
+                      shadowOffset2: Offset(0.75, 0.75),
+                      ),
+                    ),
+                ],
+              ),
+            ),
           )
+              : SizedBox(),
         ],
       ),
     );
@@ -172,22 +263,15 @@ class BarChartSample1State extends State<BarChartSample1> {
       future: _genresFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Image.asset('assets/clap.gif'); // Afficher une indication de chargement
+          return CircularProgressIndicator();
         } else if (snapshot.hasError) {
-          return Image.asset('assets/clap.gif');
+          return Text('Error: ${snapshot.error}');
         } else {
           // Construire la liste déroulante une fois que la liste des genres est récupérée
           _genresList = snapshot.data;
           return DropdownButtonFormField<Genre>(
             value: _selectedGenre,
-            onChanged: (Genre? newValue) {
-              setState(() {
-                _selectedGenre = newValue;
-                _isLoading = true;
-                _moviesFuture = FetchService.fetchMoviesTrend();
-                _isLoading = false;
-              });
-            },
+            onChanged: _handleGenreChange,
             items: [
               const DropdownMenuItem<Genre>(
                 value: null,
@@ -216,7 +300,6 @@ class BarChartSample1State extends State<BarChartSample1> {
     );
   }
 
-
   Widget _buildGraph(List<Movie> movies) {
     final List<Movie> filteredMovies = _selectedGenre != null
         ? movies
@@ -225,24 +308,33 @@ class BarChartSample1State extends State<BarChartSample1> {
         : List.from(movies);
 
     if (filteredMovies.isEmpty) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            'assets/clap.gif',
-            width: 100,
-            height: 100,
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            'Movie in the making...',
-            style: TextStyle(
-              color: Colors.white,
+      return Container(
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          color: Color(0xFF4F0404),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: EdgeInsets.all(16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/clap.gif',
+              width: 200,
+              height: 200,
             ),
-          ),
-        ],
+            SizedBox(height: 20),
+            Text(
+              'Movie in the making...',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
       );
     }
+
 
     return BarChart(
       isPlaying ? randomData(filteredMovies) : mainBarData(filteredMovies),
@@ -250,11 +342,18 @@ class BarChartSample1State extends State<BarChartSample1> {
     );
   }
 
-  BarChartGroupData makeGroupData(
-      List<Movie> filteredMovies, int x, double y,
+  BarChartGroupData makeGroupData(List<Movie> filteredMovies, int x, double y,
       {bool isTouched = false,
         Color? barColor,
         List<int> showTooltips = const []}) {
+    double barWidth = MediaQuery.of(context).size.width / filteredMovies.length;
+    if (MediaQuery.of(context).size.width < MediaQuery.of(context).size.height) {
+      // Si la largeur de l'écran est plus petite que la hauteur
+      barWidth = MediaQuery.of(context).size.width / (filteredMovies.length+5);
+    } else {
+      // Utilisez une largeur fixe lorsque la largeur de l'écran est plus grande que la hauteur
+      barWidth = 30; // Vous pouvez modifier cette valeur en fonction de vos besoins
+    }
     barColor ??= widget.barColor;
     return BarChartGroupData(
       x: x,
@@ -262,7 +361,7 @@ class BarChartSample1State extends State<BarChartSample1> {
         BarChartRodData(
           toY: isTouched ? y + 150 : y,
           color: isTouched ? widget.touchedBarColor : barColor,
-          width: 30,
+          width: barWidth,
           borderSide: isTouched
               ? BorderSide(color: widget.touchedBarColor)
               : const BorderSide(color: Colors.white, width: 0),
