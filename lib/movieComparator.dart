@@ -15,6 +15,8 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
   int _selectedCount = 2;
   List<Movie?> _selectedMovies = List.filled(4, null);
   List<bool> _showTextList = List.filled(4, false); // List to track show text state for each movie
+  List<bool> _showVoteMeanTextList = List.filled(4, false);
+
 
   List<Key> _flipCounterKeys = List.generate(4, (index) => GlobalKey()); // Generate unique keys for AnimatedFlipCounter
 
@@ -97,7 +99,8 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
     // Define margin and padding based on the selected count
     final double margin = _selectedCount == 2 ? 40.0 : 16.0;
     final double padding = _selectedCount == 2 ? 20.0 : 10.0;
-    final double gaugeRadius = _selectedCount == 2 ? 100.0 : _selectedCount == 3 ? 80.0 : 60.0;
+    final double gaugeRadius =
+    _selectedCount == 2 ? 100.0 : _selectedCount == 3 ? 80.0 : 60.0;
 
     // Determine the movie with the highest popularity
     movieWithMaxPopularity = _selectedMovies.reduce((a, b) =>
@@ -108,15 +111,16 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
         margin: EdgeInsets.all(margin),
         padding: EdgeInsets.only(left: padding, right: padding),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.transparent), // Border color based on the comparison
+          border: Border.all(color: Colors.transparent),
           borderRadius: BorderRadius.circular(10.0),
-          color: Colors.red, // Background color
+          color: Colors.red,
         ),
-        height: _selectedCount == 2 ? 400 : _selectedCount == 3 ? 330 : 275, // Adjust height based on the selected count
+        height: _selectedCount == 2 ? 400 : _selectedCount == 3 ? 330 : 275,
         child: Stack(
           children: [
             DragTarget<Movie>(
-              builder: (BuildContext context, List<Movie?> candidateData, List<dynamic> rejectedData) {
+              builder: (BuildContext context, List<Movie?> candidateData,
+                  List<dynamic> rejectedData) {
                 if (selectedMovie != null) {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,20 +143,35 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
                             if (selectedMovie.posterPath != null)
                               Container(
                                 margin: EdgeInsets.only(right: 8.0),
-                                width: _selectedCount == 2 ? 100 : _selectedCount == 3 ? 100 : 60, // Adjust poster width
-                                height: _selectedCount == 2 ? 150 : _selectedCount == 3 ? 100 : 75, // Adjust poster height
+                                width: _selectedCount == 2
+                                    ? 100
+                                    : _selectedCount == 3
+                                    ? 100
+                                    : 60,
+                                height: _selectedCount == 2
+                                    ? 150
+                                    : _selectedCount == 3
+                                    ? 100
+                                    : 75,
                                 child: CachedNetworkImage(
-                                  imageUrl: '${ApiConfig.imageBaseUrl}${selectedMovie.posterPath}',
+                                  imageUrl:
+                                  '${ApiConfig.imageBaseUrl}${selectedMovie.posterPath}',
                                   fit: BoxFit.cover,
-                                  placeholder: (context, url) => Image.asset('assets/clap.gif'),
-                                  errorWidget: (context, url, error) => Icon(Icons.error),
+                                  placeholder: (context, url) =>
+                                      Image.asset('assets/clap.gif'),
+                                  errorWidget: (context, url, error) =>
+                                      Icon(Icons.error),
                                 ),
                               ),
                             Flexible(
                               child: Text(
                                 selectedMovie.title ?? '',
                                 style: TextStyle(
-                                  fontSize: _selectedCount == 2 ? 25.0 : _selectedCount == 3 ? 16.0 : 12.0, // Adjust title font size
+                                  fontSize: _selectedCount == 2
+                                      ? 25.0
+                                      : _selectedCount == 3
+                                      ? 16.0
+                                      : 12.0,
                                   fontWeight: FontWeight.bold,
                                 ),
                                 overflow: TextOverflow.ellipsis,
@@ -164,14 +183,16 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
                       ),
                       SizedBox(height: 8.0),
                       // Other movie details
-                      _buildHighlightedText('Language:', selectedMovie.originalLanguage ?? '',index),
-                      _buildHighlightedText('Release Date:', selectedMovie.releaseDate,index),
-                      _buildHighlightedText('Vote mean:'," ",index) ,
+                      _buildHighlightedText(
+                          'Language:', selectedMovie.originalLanguage ?? '', index),
+                      _buildHighlightedText(
+                          'Release Date:', selectedMovie.releaseDate, index),
+                      _buildHighlightedText('Vote mean:', '', index),
                       SizedBox(height: 8.0),
-                      // Radial gauge
+// Radial gauge
                       Center(
                         child: Container(
-                          height: _selectedCount == 2 ? 150.0 : _selectedCount == 3 ? 120.0 : 80.0, // Adjust gauge height
+                          height: _selectedCount == 2 ? 150.0 : _selectedCount == 3 ? 120.0 : 80.0,
                           child: Stack(
                             alignment: Alignment.center,
                             children: [
@@ -189,13 +210,8 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
                                     background: Color(0x00000000),
                                     segmentSpacing: 4,
                                   ),
-                                  pointer: GaugePointer.needle(
-                                    height: 10,
-                                    width: 16,
-                                    color: Color(0xFF8B0000),
-                                  ),
                                   progressBar: GaugeProgressBar.rounded(
-                                    color: _getGaugeColor(selectedMovie.voteAverage), // Set gauge color based on vote average
+                                    color: _getGaugeColor(selectedMovie.voteAverage),
                                   ),
                                   segments: List.generate(
                                     3,
@@ -208,33 +224,32 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
                                   ),
                                 ),
                               ),
-                              if (_showTextList[index]) // Show text only when _showText is true for the specific movie
-                                Positioned(
-                                  top: 20,
-                                  child: Container(
-                                    padding: EdgeInsets.all(8.0),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.7),
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    child: Text(
-                                      'Vote Mean: ${selectedMovie?.voteAverage.toString()}',
-                                      style: TextStyle(
-                                        fontSize: 10.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
+                              Positioned(
+                                bottom: -30,
+                                child: Text(
+                                  ' ${selectedMovie.voteAverage.toString()}',
+                                  style: TextStyle(
+                                    fontSize: 14.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
                                   ),
                                 ),
+                              ),
                             ],
                           ),
                         ),
                       ),
+
+
+
                       // Other movie details
-                      _buildHighlightedText('Popularity:', selectedMovie.popularity.toString(),index),
+                      _buildHighlightedText(
+                          'Popularity:',
+                          selectedMovie.popularity.toString(),
+                          index),
                       // Use AnimatedFlipCounter for 'Vote number'
-                      _buildHighlightedText('Vote number:', selectedMovie.voteCount.toString(), index), // Pass index to the method
+                      _buildHighlightedText('Vote number:',
+                          selectedMovie.voteCount.toString(), index),
                     ],
                   );
                 } else {
@@ -253,7 +268,8 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
               onAccept: (data) {
                 setState(() {
                   _selectedMovies[index] = data;
-                  _flipCounterKeys[index] = GlobalKey(); // Update the key to force rebuild AnimatedFlipCounter
+                  _flipCounterKeys[index] =
+                      GlobalKey(); // Update the key to force rebuild AnimatedFlipCounter
                 });
               },
             ),
@@ -262,6 +278,27 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
       ),
     );
   }
+
+  void _showVoteMeanDialog(BuildContext context, double voteAverage) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Vote Mean'),
+          content: Text('Vote mean: $voteAverage'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
   Color _getGaugeColor(double voteAverage) {
     if (voteAverage < 6) {
