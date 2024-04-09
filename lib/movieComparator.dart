@@ -16,6 +16,10 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
   List<Movie?> _selectedMovies = List.filled(4, null);
   List<bool> _showTextList = List.filled(4, false); // List to track show text state for each movie
 
+  List<Key> _flipCounterKeys = List.generate(4, (index) => GlobalKey()); // Generate unique keys for AnimatedFlipCounter
+
+  Movie? movieWithMaxPopularity; // Déplacer la déclaration ici
+
   Widget _buildSelectionButton(int count, String buttonText) {
     return Expanded(
       child: Padding(
@@ -62,6 +66,31 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
     );
   }
 
+  Widget _buildGridView() {
+    return SingleChildScrollView(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height - 103, // 103 pixels de moins que la hauteur de l'écran
+        ),
+        child: GridView.builder(
+          padding: EdgeInsets.only(bottom: 22.0),
+          itemCount: _selectedCount,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: _selectedCount,
+            crossAxisSpacing: 10.0,
+            mainAxisSpacing: 10.0,
+          ),
+          itemBuilder: (context, index) {
+            return SizedBox(
+              child: _buildMovieColumn(index),
+            );
+          },
+          shrinkWrap: true,
+        ),
+      ),
+    );
+  }
+
   Widget _buildMovieColumn(int index) {
     final selectedMovie = _selectedMovies[index];
 
@@ -70,22 +99,20 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
     final double padding = _selectedCount == 2 ? 20.0 : 10.0;
     final double gaugeRadius = _selectedCount == 2 ? 100.0 : _selectedCount == 3 ? 80.0 : 60.0;
 
-    return GestureDetector(
-      onTap: () {
-        // Toggle the visibility of the text for the clicked gauge
-        setState(() {
-          _showTextList[index] = !_showTextList[index];
-        });
-      },
+    // Determine the movie with the highest popularity
+    movieWithMaxPopularity = _selectedMovies.reduce((a, b) =>
+    (a != null && b != null && a.popularity > b.popularity) ? a : b);
+
+    return SingleChildScrollView(
       child: Container(
         margin: EdgeInsets.all(margin),
         padding: EdgeInsets.only(left: padding, right: padding),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
+          border: Border.all(color: Colors.transparent), // Border color based on the comparison
           borderRadius: BorderRadius.circular(10.0),
           color: Colors.red, // Background color
         ),
-        height: _selectedCount == 2 ? 400 : _selectedCount == 3 ? 300 : 250, // Adjust height based on the selected count
+        height: _selectedCount == 2 ? 400 : _selectedCount == 3 ? 330 : 275, // Adjust height based on the selected count
         child: Stack(
           children: [
             DragTarget<Movie>(
@@ -113,7 +140,7 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
                               Container(
                                 margin: EdgeInsets.only(right: 8.0),
                                 width: _selectedCount == 2 ? 100 : _selectedCount == 3 ? 100 : 60, // Adjust poster width
-                                height: _selectedCount == 2 ? 150 : _selectedCount == 3 ? 100 : 75, /// Adjust poster height
+                                height: _selectedCount == 2 ? 150 : _selectedCount == 3 ? 100 : 75, // Adjust poster height
                                 child: CachedNetworkImage(
                                   imageUrl: '${ApiConfig.imageBaseUrl}${selectedMovie.posterPath}',
                                   fit: BoxFit.cover,
@@ -137,14 +164,14 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
                       ),
                       SizedBox(height: 8.0),
                       // Other movie details
-                      _buildHighlightedText('Language:', selectedMovie.originalLanguage ?? ''),
-                      _buildHighlightedText('Release Date:', selectedMovie.releaseDate),
-                      _buildHighlightedText('Vote mean:'," ") ,
+                      _buildHighlightedText('Language:', selectedMovie.originalLanguage ?? '',index),
+                      _buildHighlightedText('Release Date:', selectedMovie.releaseDate,index),
+                      _buildHighlightedText('Vote mean:'," ",index) ,
                       SizedBox(height: 8.0),
                       // Radial gauge
                       Center(
                         child: Container(
-                          height: _selectedCount == 2 ? 300.0 : _selectedCount == 3 ? 120.0 : 80.0, // Adjust gauge height
+                          height: _selectedCount == 2 ? 150.0 : _selectedCount == 3 ? 120.0 : 80.0, // Adjust gauge height
                           child: Stack(
                             alignment: Alignment.center,
                             children: [
@@ -205,9 +232,9 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
                         ),
                       ),
                       // Other movie details
-                      _buildHighlightedText('Popularity:', selectedMovie.popularity.toString()),
+                      _buildHighlightedText('Popularity:', selectedMovie.popularity.toString(),index),
                       // Use AnimatedFlipCounter for 'Vote number'
-                      _buildHighlightedText('Vote number:', selectedMovie.voteCount.toString()),
+                      _buildHighlightedText('Vote number:', selectedMovie.voteCount.toString(), index), // Pass index to the method
                     ],
                   );
                 } else {
@@ -226,6 +253,7 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
               onAccept: (data) {
                 setState(() {
                   _selectedMovies[index] = data;
+                  _flipCounterKeys[index] = GlobalKey(); // Update the key to force rebuild AnimatedFlipCounter
                 });
               },
             ),
@@ -234,7 +262,6 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
       ),
     );
   }
-
 
   Color _getGaugeColor(double voteAverage) {
     if (voteAverage < 6) {
@@ -246,7 +273,25 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
     }
   }
 
-  Widget _buildHighlightedText(String label, String value) {
+  Widget _buildHighlightedText(String label, String value, int index) {
+    final selectedMovie = _selectedMovies[index];
+
+    // Déterminez la valeur maximale pour cet élément parmi tous les films sélectionnés
+    final maxValues = {
+      'popularity': _selectedMovies.map((movie) => movie?.popularity ?? 0).reduce(max),
+      'voteCount': _selectedMovies.map((movie) => movie?.voteCount ?? 0).reduce(max),
+      // Ajoutez d'autres éléments à comparer si nécessaire
+    };
+
+    // Vérifiez si la valeur actuelle est maximale pour cet élément
+    bool isMaxValue = false;
+    if (label == 'Popularity:') {
+      isMaxValue = selectedMovie?.popularity == maxValues['popularity'];
+    } else if (label == 'Vote number:') {
+      isMaxValue = selectedMovie?.voteCount == maxValues['voteCount'];
+    }
+    // Ajoutez des conditions supplémentaires pour d'autres éléments si nécessaire
+
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
@@ -255,30 +300,24 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
             '$label ',
             style: TextStyle(
               fontSize: 14.0,
+              fontWeight: isMaxValue ? FontWeight.bold : FontWeight.normal,
+              color: isMaxValue ?Color(0xFF8B0000): Colors.white,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 14.0,
               fontWeight: FontWeight.bold,
             ),
           ),
-          if (label == 'Vote number:') // Use AnimatedFlipCounter only for 'Vote number'
-            AnimatedFlipCounter(
-              value: int.tryParse(value) ?? 0, // Parse value to integer
-              duration: Duration(seconds: 1), // Animation duration
-              textStyle: TextStyle(
-                fontSize: 14.0,
-                fontWeight: FontWeight.bold,
-              ),
-            )
-          else
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 14.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
         ],
       ),
     );
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -296,14 +335,12 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
         ),
         _buildSelectionButtons(),
         SizedBox(height: 20.0),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final maxWidth = constraints.maxWidth;
-            final maxHeight = constraints.maxHeight;
-            final itemWidth = maxWidth / _selectedCount;
-            return SizedBox(
-              height: 650,
-              child: GridView.builder(
+        Expanded(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final maxWidth = constraints.maxWidth;
+              final itemWidth = maxWidth / _selectedCount; // Déplacer itemWidth à l'intérieur de LayoutBuilder
+              return GridView.builder(
                 padding: EdgeInsets.only(bottom: 22.0),
                 itemCount: _selectedCount,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -313,16 +350,17 @@ class _MovieComparisonSelectorState extends State<MovieComparisonSelector> {
                 ),
                 itemBuilder: (context, index) {
                   return SizedBox(
-                    height: maxHeight,
                     width: itemWidth,
                     child: _buildMovieColumn(index),
                   );
                 },
-              ),
-            );
-          },
+                shrinkWrap: true,
+              );
+            },
+          ),
         ),
       ],
     );
   }
 }
+
