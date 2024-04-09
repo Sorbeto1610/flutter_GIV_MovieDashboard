@@ -20,7 +20,7 @@ class ResponsiveText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double responsiveFontSize = screenWidth * fontSize / 1000.0;
+    double responsiveFontSize = screenWidth * fontSize / 700.0;
     Offset responsiveShadowOffset = Offset(
       shadowOffset.dx * responsiveFontSize / 20,
       shadowOffset.dy * responsiveFontSize / 20,
