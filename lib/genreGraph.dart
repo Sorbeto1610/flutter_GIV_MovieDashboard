@@ -86,15 +86,15 @@ class BarChartSample1State extends State<BarChartSample1> {
                 ),
                 Center(
                     child: ResponsiveText(
-                      text: "Trending Movies from this week",
+                      text: "Bar chart of popularity sorted by genre",
                       fontSize: 20.0,
                       textColor: Colors.white,
                       shadowColor: Colors.red,
                       shadowOffset: Offset(0.0, 0.0),
                     ),
                   ),
-                const SizedBox(
-                  height: 38,
+                 SizedBox(
+                  height: (MediaQuery.of(context).size.height*100 + MediaQuery.of(context).size.width)/(MediaQuery.of(context).size.height*0.2 + MediaQuery.of(context).size.width),
                 ),
                 ResponsiveText(
                   text: "Select genre :",

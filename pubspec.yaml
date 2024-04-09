@@ -50,6 +50,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  gauge_indicator: ^0.4.3
+
+
   intl: ^0.17.0 # Vérifiez pour la version la plus récente
 
 

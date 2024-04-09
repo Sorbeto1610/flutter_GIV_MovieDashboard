@@ -66,7 +66,7 @@ class TrendingMoviesHomePageState extends State<TrendingMoviesHomePage> {
         elevation: 0, // Supprimer l'ombre de l'app bar
         title: ResponsiveText(
           text: "Trending Movies from this week",
-          fontSize: 20.0,
+          fontSize: 17.0,
           textColor: Colors.white,
           shadowColor: Colors.red,
           shadowOffset: Offset(0.0, 0.0),
