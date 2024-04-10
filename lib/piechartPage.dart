@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:giv/ResponsiveText.dart';
 import 'movie.dart';
 import 'fetchService.dart';
 import 'countingGenres.dart';
@@ -59,7 +60,7 @@ class _PiechartPageState extends State<PiechartPage> {
               value: percentage,
               title: genre.name,
               titleStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-              radius: 100,
+              radius: (12*MediaQuery.of(context).size.width+MediaQuery.of(context).size.height)/250 + 35,
             );
           }).toList();
 
@@ -70,14 +71,34 @@ class _PiechartPageState extends State<PiechartPage> {
                 color: Colors.grey[900],
                 borderRadius: BorderRadius.circular(20.0),
               ),
-              child: PieChart(
-                PieChartData(
-                  startDegreeOffset: -90, // Les sections du PieChart sont tournées de -90 degrés
-                  sections: sections,
-                  borderData: FlBorderData(show: false),
-                  sectionsSpace: 2,
-                  centerSpaceRadius: 80,
-                ),
+              child:
+              Stack(
+                children: [
+                  Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 12,),
+                    ResponsiveText(
+                      text: 'Quantity of movies per genre',
+                      fontSize: 12,
+                      textColor: Colors.white,
+                      shadowColor: Colors.white,
+                      shadowOffset: Offset(0.0, 0.0),
+                    ),
+                  ],
+                  ),
+
+
+                   PieChart(
+                      PieChartData(
+                        startDegreeOffset: -90, // Les sections du PieChart sont tournées de -90 degrés
+                        sections: sections,
+                        borderData: FlBorderData(show: false),
+                        sectionsSpace: 2,
+                        centerSpaceRadius: (12*MediaQuery.of(context).size.width+MediaQuery.of(context).size.height)/250,
+                      ),
+                    ),
+                ],
               ),
             ),
           );

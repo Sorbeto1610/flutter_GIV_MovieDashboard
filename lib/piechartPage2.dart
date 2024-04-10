@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'ResponsiveText.dart';
 import 'movie.dart';
 import 'fetchService.dart';
 import 'genre.dart';
@@ -77,7 +78,24 @@ class _PiechartPage2State extends State<PiechartPage2> {
           color: Colors.grey[900],
           borderRadius: BorderRadius.circular(20.0),
         ),
-        child: PieChart(
+        child:
+        Stack(
+          children: [
+            SizedBox(height: 12,),
+          Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ResponsiveText(
+              text: 'Cumulated popularity per genre',
+              fontSize: 12,
+              textColor: Colors.white,
+              shadowColor: Colors.white,
+              shadowOffset: Offset(0.0, 0.0),
+            ),
+          ],
+        ),
+
+        PieChart(
           PieChartData(
             startDegreeOffset: -90, // Appliquer la rotation ici
             sections: _genrePopularityMap.entries.map((entry) {
@@ -86,14 +104,16 @@ class _PiechartPage2State extends State<PiechartPage2> {
                 value: entry.value,
                 title: entry.key,
                 titleStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-                radius: 100,
+                radius: (12*MediaQuery.of(context).size.width+MediaQuery.of(context).size.height)/250 + 35,
               );
             }).toList(),
             borderData: FlBorderData(show: false),
             sectionsSpace: 2,
-            centerSpaceRadius: 80,
+            centerSpaceRadius: (12*MediaQuery.of(context).size.width+MediaQuery.of(context).size.height)/250,
           ),
         ),
+          ]
+      ),
       ),
     )
         : Center(child: CircularProgressIndicator());
