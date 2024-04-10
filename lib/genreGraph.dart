@@ -187,8 +187,8 @@ class BarChartSample1State extends State<BarChartSample1> {
                 children: [
                   Image.asset(
                     'assets/clap.gif',
-                    width: 600,
-                    height: 400,
+                    width: MediaQuery.of(context).size.width/3,
+                    height: MediaQuery.of(context).size.height/3,
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
