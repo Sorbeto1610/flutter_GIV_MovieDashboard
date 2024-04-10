@@ -32,17 +32,21 @@ class _PiechartPageState extends State<PiechartPage> {
     return FutureBuilder(
       future: Future.wait([_moviesFuture, _genresFuture]),
       builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Erreur: ${snapshot.error}'));
-        } else {
+
+
+
           final List<Movie> movies = snapshot.data![0];
           final List<Genre> genres = snapshot.data![1];
+          genres.sort((a, b) => a.name.compareTo(b.name));
           final Map<String, int> genreCounts = countingGenreDictionary(movies, genres);
           final Map<String, double> genrePercentages = calculateGenrePercentages(genreCounts);
-
-          genres.sort((a, b) => a.name.compareTo(b.name)); // S'assurer que l'ordre des genres est cohérent
+          final sortedGenreCounts = genreCounts.entries.toList()
+            ..sort((a, b) => a.key.compareTo(b.key));
+          final sortedPrimaryColors = sortedGenreCounts.map((entry) {
+            final genreIndex = genres.indexWhere((genre) => genre.name == entry.key);
+            final colorIndex = genreIndex % Colors.primaries.length;
+            return Colors.primaries[colorIndex];
+          }).toList();
 
           bool hasDataChanged = _lastGenrePercentages.toString() != genrePercentages.toString();
           if (hasDataChanged) {
@@ -51,20 +55,24 @@ class _PiechartPageState extends State<PiechartPage> {
             });
             _lastGenrePercentages = Map.from(genrePercentages);
           }
+          final List<PieChartSectionData> sections = sortedGenreCounts.map((entry) {
+            final genreName = entry.key;
+            final percentage = genrePercentages[genreName] ?? 0;
 
-          final List<PieChartSectionData> sections = genres.map((Genre genre) {
-            final percentage = genrePercentages[genre.name] ?? 0;
-            final colorIndex = genres.indexOf(genre) % Colors.primaries.length;
             return PieChartSectionData(
-              color: Colors.primaries[colorIndex],
-              value: percentage,
-              title: genre.name,
-              titleStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+              color: sortedPrimaryColors[sortedGenreCounts.indexOf(entry)],
+              value: percentage, // Setting value equal to entry.key
+              title: '${entry.value}',
+              titleStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: (8*MediaQuery.of(context).size.width+8*MediaQuery.of(context).size.height)/650),
               radius: (12*MediaQuery.of(context).size.width+MediaQuery.of(context).size.height)/250 + 35,
             );
           }).toList();
 
-          return Padding(
+// Tri des sections en fonction des noms de genre
+        sections.sort((a, b) => a.value.compareTo(b.value));
+
+
+        return Padding(
             padding: const EdgeInsets.all(20.0),
             child: Container(
               decoration: BoxDecoration(
@@ -102,7 +110,6 @@ class _PiechartPageState extends State<PiechartPage> {
               ),
             ),
           );
-        }
       },
     );
   }
