@@ -68,6 +68,38 @@ class _PiechartPage2State extends State<PiechartPage2> {
     return Colors.primaries[index % Colors.primaries.length];
   }
 
+  Future<List<PieChartSectionData>> _buildPieChartSectionData() async {
+    Map<String, double> genrePopularityMap = await recupGenrePopularityMap();
+
+
+    return genrePopularityMap.entries.map((entry) {
+      return PieChartSectionData(
+        color: getGenreColor(entry.key),
+        value: entry.value,
+        title: '${(entry.value / 1000).toStringAsFixed(1)}K', // Using entry.key and entry.value from the map
+        titleStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: (8*MediaQuery.of(context).size.width+8*MediaQuery.of(context).size.height)/900),
+        radius: (12 * MediaQuery.of(context).size.width + MediaQuery.of(context).size.height) / 250 + 35,
+      );
+    }).toList();
+  }
+
+  Future<Map<String, double>> recupGenrePopularityMap() async{
+    final List<Movie> movies = await _moviesFuture;
+    genres = await _genresFuture; // Chargement de la liste des genres
+    Map<String, double> genrePopularityMap = {};
+    for (var genre in genres) {
+      double genrePopularity = 0;
+      for (var movie in movies) {
+        if (movie.genreIds.contains(genre.id)) {
+          genrePopularity += movie.popularity;
+        }
+      }
+
+        genrePopularityMap[genre.name] = genrePopularity;
+    }
+    return genrePopularityMap;
+  }
+
   @override
   Widget build(BuildContext context) {
     return _genrePopularityMap.isNotEmpty
@@ -78,42 +110,38 @@ class _PiechartPage2State extends State<PiechartPage2> {
           color: Colors.grey[900],
           borderRadius: BorderRadius.circular(20.0),
         ),
-        child:
-        Stack(
+        child: Stack(
           children: [
             SizedBox(height: 12,),
-          Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ResponsiveText(
-              text: 'Cumulated popularity per genre',
-              fontSize: 12,
-              textColor: Colors.white,
-              shadowColor: Colors.white,
-              shadowOffset: Offset(0.0, 0.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ResponsiveText(
+                  text: 'Cumulated popularity per genre',
+                  fontSize: 12,
+                  textColor: Colors.white,
+                  shadowColor: Colors.white,
+                  shadowOffset: Offset(0.0, 0.0),
+                ),
+              ],
+            ),
+            FutureBuilder(
+              future: _buildPieChartSectionData(),
+              builder: (context, snapshot) {
+
+                  return PieChart(
+                    PieChartData(
+                      startDegreeOffset: -90, // Appliquer la rotation ici
+                      sections: snapshot.data as List<PieChartSectionData>,
+                      borderData: FlBorderData(show: false),
+                      sectionsSpace: 2,
+                      centerSpaceRadius: (12 * MediaQuery.of(context).size.width + MediaQuery.of(context).size.height) / 250,
+                    ),
+                  );
+              },
             ),
           ],
         ),
-
-        PieChart(
-          PieChartData(
-            startDegreeOffset: -90, // Appliquer la rotation ici
-            sections: _genrePopularityMap.entries.map((entry) {
-              return PieChartSectionData(
-                color: getGenreColor(entry.key),
-                value: entry.value,
-                title: entry.key,
-                titleStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-                radius: (12*MediaQuery.of(context).size.width+MediaQuery.of(context).size.height)/250 + 35,
-              );
-            }).toList(),
-            borderData: FlBorderData(show: false),
-            sectionsSpace: 2,
-            centerSpaceRadius: (12*MediaQuery.of(context).size.width+MediaQuery.of(context).size.height)/250,
-          ),
-        ),
-          ]
-      ),
       ),
     )
         : Center(child: CircularProgressIndicator());
