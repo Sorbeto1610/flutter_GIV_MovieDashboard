@@ -1,6 +1,25 @@
-# giv
+# GIV The Movie DataBase 
 
-A new Flutter project.
+<img width="1180" alt="Screenshot 2024-04-10 at 10 31 13" src="https://github.com/Sorbeto1610/flutter_GIV/assets/147889016/a0bf9ae7-2186-49f2-9138-d01212a91495">
+
+
+## Description
+
+This project is a dashboard, that represents the data that we have from TMDB [(the movie database) https://www.themoviedb.org/].We decided to focus on the movies that are trending this week and represent relevant data in a way that makes it easier for the user to understand the movies impact and elements that explains the relevance of a movie. 
+
+
+## Collaborators
+- [@irenedagherr](https://github.com/irenedagherr)
+- [@Sorbeto1610](https://github.com/Sorbeto1610)
+- [@valixiie](https://github.com/@valixiie)
+
+
+## 
+
+
+##Installatiom
+installation android studio 
+
 
 ## Getting Started
 
